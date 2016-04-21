@@ -1,0 +1,31 @@
+{
+  "name": "process-scheduler",
+  "version": "0.0.1",
+  "description": "schedule processes with dependencies",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "mocha --timeout 2000 --require should --reporter mocha-better-spec-reporter --recursive"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cheminfo/process-scheduler.git"
+  },
+  "keywords": [
+    "scheduler",
+    "processes"
+  ],
+  "author": "Daniel Kostro <kostro.d@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cheminfo/process-scheduler/issues"
+  },
+  "homepage": "https://github.com/cheminfo/process-scheduler#readme",
+  "dependencies": {
+    "node-schedule": "^1.1.0"
+  },
+  "devDependencies": {
+    "mocha": "^2.4.5",
+    "mocha-better-spec-reporter": "^3.0.2",
+    "should": "^8.3.1"
+  }
+}
