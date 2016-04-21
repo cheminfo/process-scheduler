@@ -3,6 +3,7 @@
 const nodeSchedule = require('node-schedule');
 const fork = require('child_process').fork;
 const EventEmitter = require('events');
+const constants = require('./constants');
 
 
 class ProcessScheduler extends EventEmitter {
@@ -14,19 +15,19 @@ class ProcessScheduler extends EventEmitter {
         this._queued = new Map();
         this._seqId = 0;
 
-        if(typeof this.threads === 'number') {
+        if (typeof this.threads === 'number') {
             this.threads = {
                 default: this.threads
             };
         }
 
-        if(!this.threads.default) {
+        if (!this.threads.default) {
             this.threads.default = 0;
         }
 
         this.totalThreads = 0;
 
-        for(let key in this.threads) {
+        for (let key in this.threads) {
             this.totalThreads += this.threads[key];
         }
 
@@ -38,33 +39,33 @@ class ProcessScheduler extends EventEmitter {
     }
 
     _addProcess(options) {
-        if(options instanceof Array) {
-            for(let i=0; i<options.length; i++) {
+        if (options instanceof Array) {
+            for (let i = 0; i < options.length; i++) {
                 this._addProcess(options[i]);
             }
             return;
         }
 
-        if(!options.id) {
+        if (!options.id) {
             throw new Error('id is mandatory');
         }
-        if(!options.worker) {
+        if (!options.worker) {
             throw new Error('worker is mandatory')
         }
 
         options.arg = options.arg || {};
 
-        if(!options.type) {
+        if (!options.type) {
             options.type = 'default';
         }
 
-        if(options.noConcurrency) {
-            if(!this._concurrencyRules.get(options.id)) {
+        if (options.noConcurrency) {
+            if (!this._concurrencyRules.get(options.id)) {
                 this._concurrencyRules.set(options.id, new Set());
             }
-            for(let i=0; i<options.noConcurrency.length; i++) {
+            for (let i = 0; i < options.noConcurrency.length; i++) {
                 var id = options.noConcurrency[i];
-                if(!this._concurrencyRules.has(id)) {
+                if (!this._concurrencyRules.has(id)) {
                     this._concurrencyRules.set(id, new Set());
                 }
                 this._concurrencyRules.get(id).add(options.id);
@@ -72,9 +73,9 @@ class ProcessScheduler extends EventEmitter {
             }
         }
 
-        if(options.cronRule) {
+        if (options.cronRule) {
             var scheduler = this.schedulers.get(options.id);
-            if(scheduler) scheduler.cancel();
+            if (scheduler) scheduler.cancel();
             this.schedulers.set(options.id, nodeSchedule.scheduleJob(options.cronRule, () => {
                 this._queueProcess(options);
             }))
@@ -86,21 +87,21 @@ class ProcessScheduler extends EventEmitter {
     _queueProcess(options) {
         // Don't queue if already queued
         var id = options.id;
-        if(this._queued.has(id)) {
+        if (this._queued.has(id)) {
             return;
         }
 
         // The setTimeout ensure that if cronjobs execute roughly at the same time
         // The are added to the queue before their dependencies
-        if(options.deps) {
+        if (options.deps) {
             setTimeout(() => {
-                for(let i=0; i<options.deps.length; i++) {
+                for (let i = 0; i < options.deps.length; i++) {
                     this._addProcess(options.deps[i]);
                 }
             }, 1000);
         }
 
-        if(!options) {
+        if (!options) {
             console.warn('Unreachable');
             return;
         }
@@ -117,53 +118,69 @@ class ProcessScheduler extends EventEmitter {
         var runningIds = running.map(r => r.id);
 
 
-        if(running.length >= this.totalThreads) {
+        if (running.length >= this.totalThreads) {
             return;
         }
 
         var next, hasConcurrent;
         var queued = getByStatus(this._queued, 'queued');
-        for(let i=0; i<queued.length; i++) {
+        for (let i = 0; i < queued.length; i++) {
             let runningByType = running.filter(r => {
                 return r.type === queued[i].type;
             });
-            if(runningByType.length >= this.threads[queued[i].type]) {
+            if (runningByType.length >= this.threads[queued[i].type]) {
                 continue;
             }
             let noConcurrency = this._concurrencyRules.get(queued[i].id);
-            if(!noConcurrency) {
+            if (!noConcurrency) {
                 hasConcurrent = false;
             } else {
                 hasConcurrent = runningIds.some(runningId => {
                     return noConcurrency.has(runningId);
                 });
             }
-            if(!hasConcurrent) {
+            if (!hasConcurrent) {
                 next = queued[i];
                 break;
             }
         }
-        if(!next) {
+        if (!next) {
             return;
         }
 
+        next.stderr = '';
+        next.stdout = '';
+
         setStatus.call(this, next, 'running', true);
-        var childProcess = fork(next.worker);
+        var childProcess = fork(next.worker, {silent: true});
         childProcess.on('message', msg => {
             handleMessage.call(this, next, msg);
         });
 
         childProcess.on('exit', msg => {
-            if(msg > 0) {
+            if (msg > 0) {
                 handleMessage.call(this, next, {
-                    status: 'errored',
-                    message: 'Uncaught error'
+                    status: 'error',
+                    message: 'worker error'
                 });
             }
         });
 
         childProcess.on('error', msg => {
-            console.log('fork error', msg);
+            console.log('child process error', msg);
+            //console.log(msg)
+            //handleMessage.call(this, next, {
+            //    status: 'error',
+            //    message: 'worker error'
+            //});
+        });
+
+        childProcess.stdout.on('data', data => {
+            next.stdout += data.toString();
+        });
+
+        childProcess.stderr.on('data', data => {
+            next.stderr += data.toString()
         });
 
         childProcess.send(next.arg);
@@ -175,31 +192,48 @@ class ProcessScheduler extends EventEmitter {
 function getByStatus(m, status) {
     var arr = [];
     m.forEach(val => {
-        if(val.status === status) {
+        if (val.status === status) {
             arr.push(val);
         }
     });
-    arr.sort((a,b) => a.seqId > b.seqId);
+    arr.sort((a, b) => a.seqId > b.seqId);
     return arr;
 }
 
 function setStatus(obj, status, emitChange) {
-    if(obj.status !== status) {
+    if (obj.status !== status) {
         obj.status = status;
-        if(emitChange) {
+        if (emitChange) {
             this.emit('change', obj);
         }
     }
 }
 
 function handleMessage(queued, message) {
-    if(!message.status) {
+    if (!messageValid(message)) {
+        message = {
+            status: 'error',
+            message: 'Process sent invalid message'
+        }
+    }
+    if (!message.status) {
         throw new Error('Expected worker to return with a status');
     }
     queued.message = message.message;
     setStatus.call(this, queued, message.status, true);
     this._queued.delete(queued.id);
     this._runNext();
+}
+
+function messageValid(message) {
+    if (message === null || typeof message !== 'object') {
+        return false;
+    }
+    if (constants.validStatus.indexOf(message.status) === -1) {
+        return false;
+    }
+
+    return true;
 }
 
 module.exports = ProcessScheduler;

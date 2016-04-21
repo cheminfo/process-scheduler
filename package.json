@@ -4,7 +4,7 @@
   "description": "schedule processes with dependencies",
   "main": "src/index.js",
   "scripts": {
-    "test": "mocha --timeout 2000 --require should --reporter mocha-better-spec-reporter --recursive"
+    "test": "mocha --timeout 2000 --require should --reporter mocha-better-spec-reporter test/*.js"
   },
   "repository": {
     "type": "git",

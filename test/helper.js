@@ -8,7 +8,7 @@ helper.testSchedule = function testSchedule(config, schedule, expect) {
     return new Promise((resolve, reject) => {
         let processScheduler = new ProcessScheduler(config);
 
-        pushChanges({
+        var prom = pushChanges({
             resolve,
             reject,
             expect,
@@ -23,14 +23,20 @@ function pushChanges(options) {
     var changes = [];
     options.scheduler.on('change', msg => {
         changes = changes || [];
-        changes.push({
+        let change = {
             id: msg.id,
             status: msg.status
+        };
+        if(msg.message) change.message = msg.message;
+        changes.push({
+            originalMessage: msg,
+            shortMessage: change
         });
 
+
         if(changes.length === options.expect.length) {
-            changes.should.deepEqual(options.expect);
-            options.resolve();
+            changes.map(change => change.shortMessage).should.deepEqual(options.expect);
+            options.resolve(changes);
         }
     });
 }
