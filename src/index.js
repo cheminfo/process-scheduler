@@ -52,9 +52,7 @@ class ProcessScheduler extends EventEmitter {
             throw new Error('worker is mandatory')
         }
 
-        if(!options.arg) {
-            throw new Error('arg is mandatory');
-        }
+        options.arg = options.arg || {};
 
         if(!options.type) {
             options.type = 'default';
@@ -86,7 +84,6 @@ class ProcessScheduler extends EventEmitter {
     }
 
     _queueProcess(options) {
-        console.log('queue process');
         // Don't queue if already queued
         var id = options.id;
         if(this._queued.has(id)) {
@@ -97,9 +94,7 @@ class ProcessScheduler extends EventEmitter {
         // The are added to the queue before their dependencies
         if(options.deps) {
             setTimeout(() => {
-                console.log('aa', options.deps);
                 for(let i=0; i<options.deps.length; i++) {
-                    console.log('add process from deps')
                     this._addProcess(options.deps[i]);
                 }
             }, 1000);
@@ -123,7 +118,6 @@ class ProcessScheduler extends EventEmitter {
 
 
         if(running.length >= this.totalThreads) {
-            console.log('threads in use');
             return;
         }
 
@@ -150,11 +144,9 @@ class ProcessScheduler extends EventEmitter {
             }
         }
         if(!next) {
-            console.log('concurrency or none queued');
             return;
         }
 
-        console.log('fork');
         setStatus.call(this, next, 'running', true);
         var childProcess = fork(next.worker);
         childProcess.on('message', msg => {
@@ -162,7 +154,6 @@ class ProcessScheduler extends EventEmitter {
         });
 
         childProcess.on('exit', msg => {
-            console.log('exit', msg);
             if(msg > 0) {
                 handleMessage.call(this, next, {
                     status: 'errored',
