@@ -42,7 +42,6 @@ class ProcessScheduler extends EventEmitter {
             for (let i = 0; i < options.length; i++) {
                 this._schedule(options[i].id);
             }
-            return;
         } else {
             this._register(options);
             this._schedule(options.id);
@@ -113,6 +112,14 @@ class ProcessScheduler extends EventEmitter {
         } else {
             console.warn('trigger had no effect (tried to trigger unregistered process)');
         }
+    }
+
+    getQueued() {
+        return getByStatus(this._queued, 'queued');
+    }
+
+    getRunning() {
+        return getByStatus(this._queued, 'running');
     }
 
 
@@ -251,12 +258,9 @@ function handleMessage(queued, message) {
             message: 'Process sent invalid message'
         }
     }
-    if (!message.status) {
-        throw new Error('Expected worker to return with a status');
-    }
     queued.message = message.message;
-    setStatus.call(this, queued, message.status, true);
     this._queued.delete(queued.id);
+    setStatus.call(this, queued, message.status, true);
     this._runNext();
 }
 
@@ -264,11 +268,7 @@ function messageValid(message) {
     if (message === null || typeof message !== 'object') {
         return false;
     }
-    if (constants.validStatus.indexOf(message.status) === -1) {
-        return false;
-    }
-
-    return true;
+    return constants.validStatus.indexOf(message.status) !== -1;
 }
 
 module.exports = ProcessScheduler;

@@ -40,6 +40,8 @@ function pushChanges(options, groupById) {
         }
 
         if(computeLength(changes) === computeLength(options.expect)) {
+            options.scheduler.getQueued().length.should.equal(0);
+            options.scheduler.getRunning().length.should.equal(0);
             mapShort(changes).should.deepEqual(options.expect);
             options.resolve(changes);
         }
