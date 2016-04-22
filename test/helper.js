@@ -16,6 +16,7 @@ helper.testSchedule = function testSchedule(config, schedule, expect, groupById)
         }, groupById);
 
         processScheduler.schedule(schedule);
+        return prom;
     });
 };
 
