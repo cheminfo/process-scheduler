@@ -51,7 +51,10 @@ class ProcessScheduler extends EventEmitter {
 
     _schedule(id) {
         var options = this._registered.get(id);
-        if(!options) throw new Error('unexpected');
+        if(!options) {
+            console.warn('schedule had no effect (tried to schedule unregistered process)');
+            return;
+        }
         if (options.cronRule) {
             var scheduler = this.schedulers.get(options.id);
             if (scheduler) scheduler.cancel();
@@ -107,7 +110,7 @@ class ProcessScheduler extends EventEmitter {
         if (options) {
             this.schedule(options, true)
         } else {
-            throw new Error('Cannot trigger unregistered process ' + options);
+            console.warn('trigger had no effect (tried to trigger unregistered process)');
         }
     }
 

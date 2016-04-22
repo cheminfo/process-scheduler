@@ -24,7 +24,7 @@ describe('success', () => {
             p1: [
                 {status: 'queued', id: 'p1'},
                 {status: 'running', id: 'p1'},
-                {status: 'success', id: 'p1'},
+                {status: 'success', id: 'p1'}
             ],
             p2: [
                 {status: 'queued', id: 'p2'},
