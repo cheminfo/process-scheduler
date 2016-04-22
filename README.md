@@ -1,6 +1,4 @@
 # process-scheduler
-
-# process-scheduler
 Manage node workers
 Features:
 - Schedule processes with a crontab rules
