@@ -21,7 +21,7 @@ Features:
   - `worker`: the worker that the scheduler will fork (mandatory)
   - `type`: type of process. Default is `'default'`
   - `noConcurrency`: an array of process ids with which this process should not be run concurrently
-  - `deps`: an array of process ids that should be triggered when this process is triggered. If the appropriate `noConcurrency` rule exists, the depenency processes will be executed only after this process has finished. The deps array can also nest an object with the `options` structure.
+  - `deps`: an array of process ids that should be triggered when this process is triggered. If the appropriate `noConcurrency` rule exists, the depenency processes will be executed only after this process has finished. The deps array can also nest an object with the `options` structure. `scheduler.schedule` will fail if circular dependencies are detected.
   - `cronRule`: a cron rule for executing the process. If not given the process is triggered once immediatly. See [node-schedule](https://github.com/node-schedule/node-schedule) for accepted input.
   - `immediate`: `true` or `false` wheter to execute the process once immediately or not. If `undefined` the process is executed immediately only if no `cronRule` is given
 
