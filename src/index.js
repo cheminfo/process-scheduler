@@ -4,11 +4,13 @@ const nodeSchedule = require('node-schedule');
 const fork = require('child_process').fork;
 const EventEmitter = require('events');
 const constants = require('./constants');
+const circular = require('./util/circular');
 
 
 class ProcessScheduler extends EventEmitter {
     constructor(options) {
         super();
+        this._registered = new Map();
         this.threads = options.threads;
         this._concurrencyRules = new Map();
         this.schedulers = new Map();
@@ -35,6 +37,13 @@ class ProcessScheduler extends EventEmitter {
     }
 
     schedule(options) {
+        if(typeof options === 'string') {
+            var opts = this._registered.get(options);
+            if(!opts) {
+                throw new Error('Cannot schedule unregistered process ' + options);
+            }
+            options = opts;
+        }
         this._addProcess(options);
     }
 
@@ -45,6 +54,7 @@ class ProcessScheduler extends EventEmitter {
             }
             return;
         }
+
 
         if (!options.id) {
             throw new Error('id is mandatory');
@@ -72,7 +82,10 @@ class ProcessScheduler extends EventEmitter {
                 this._concurrencyRules.get(options.id).add(id);
             }
         }
-
+        
+        this._registered.set(options.id, options);
+        this._checkCircular(options.id);
+        
         if (options.cronRule) {
             var scheduler = this.schedulers.get(options.id);
             if (scheduler) scheduler.cancel();
@@ -81,6 +94,13 @@ class ProcessScheduler extends EventEmitter {
             }))
         } else {
             this._queueProcess(options);
+        }
+    }
+
+    _checkCircular(id) {
+        if(circular(this._registered)) {
+            this._registered.delete(id);
+            throw new Error('Found circular dependency');
         }
     }
 
@@ -96,7 +116,7 @@ class ProcessScheduler extends EventEmitter {
         if (options.deps) {
             setTimeout(() => {
                 for (let i = 0; i < options.deps.length; i++) {
-                    this._addProcess(options.deps[i]);
+                    this.schedule(options.deps[i]);
                 }
             }, 250);
         }
