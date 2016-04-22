@@ -72,4 +72,22 @@ describe('success', () => {
         });
     });
 
+    it('worker missing file', function () {
+        var config = {threads: 2};
+        var schedule = [
+            {
+                id: 'p1',
+                worker: path.join(__dirname, 'does/not/exist.js')
+            }
+        ];
+
+        var expect = [
+            {status: 'queued', id: 'p1'},
+            {status: 'running', id: 'p1'},
+            {status: 'error', id: 'p1', message: 'worker error'}
+        ];
+        
+        return helper.testSchedule(config, schedule, expect);
+    })
+
 });

@@ -9,11 +9,12 @@ describe('basic', function () {
         var schedule = [
             {
                 id: 'p1',
-                worker: path.join(__dirname, 'worker/success.js')
+                worker: path.join(__dirname, 'workers/success.js')
             },
             {
                 id: 'p2',
-                worker: path.join(__dirname, 'worker/success.js')
+                worker: path.join(__dirname, 'workers/success.js'),
+                immediate: false
             }
         ];
 
@@ -23,6 +24,6 @@ describe('basic', function () {
             {id: 'p1', status: 'success'}
         ];
 
-        helper.testSchedule(config, schedule, expect);
+        return helper.testSchedule(config, schedule, expect);
     });
 });
