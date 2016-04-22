@@ -20,17 +20,21 @@ describe('success', () => {
             }
         ];
 
-        var expect = [
-            {status: 'queued', id: 'p1'},
-            {status: 'running', id: 'p1'},
-            {status: 'queued', id: 'p2'},
-            {status: 'running', id: 'p2'},
-            {status: 'success', id: 'p1'},
-            {status: 'success', id: 'p2'}
-        ];
+        var expect = {
+            p1: [
+                {status: 'queued', id: 'p1'},
+                {status: 'running', id: 'p1'},
+                {status: 'success', id: 'p1'},
+            ],
+            p2: [
+                {status: 'queued', id: 'p2'},
+                {status: 'running', id: 'p2'},
+                {status: 'success', id: 'p2'}
+            ]
+        };
 
 
-        return helper.testSchedule(config, schedule, expect);
+        return helper.testSchedule(config, schedule, expect, true);
     });
 
     it('non-concurrent thread-limited', function () {

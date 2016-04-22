@@ -4,7 +4,7 @@ const ProcessScheduler = require('../src/index');
 
 var helper = module.exports = {};
 
-helper.testSchedule = function testSchedule(config, schedule, expect) {
+helper.testSchedule = function testSchedule(config, schedule, expect, groupById) {
     return new Promise((resolve, reject) => {
         let processScheduler = new ProcessScheduler(config);
 
@@ -13,32 +13,63 @@ helper.testSchedule = function testSchedule(config, schedule, expect) {
             reject,
             expect,
             scheduler: processScheduler
-        });
+        }, groupById);
 
         processScheduler.schedule(schedule);
     });
 };
 
-function pushChanges(options) {
-    var changes = [];
+function pushChanges(options, groupById) {
+    var changes = groupById ? {} : [];
     options.scheduler.on('change', msg => {
-        changes = changes || [];
         let change = {
             id: msg.id,
             status: msg.status
         };
         if(msg.message) change.message = msg.message;
-        changes.push({
+        let toPush = {
             originalMessage: msg,
             shortMessage: change
-        });
+        };
+        if(groupById) {
+            changes[change.id] = changes[change.id] || [];
+            changes[change.id].push(toPush);
+        } else {
+            changes.push(toPush);
+        }
 
-
-        if(changes.length === options.expect.length) {
-            changes.map(change => change.shortMessage).should.deepEqual(options.expect);
+        if(computeLength(changes) === computeLength(options.expect)) {
+            mapShort(changes).should.deepEqual(options.expect);
             options.resolve(changes);
         }
     });
 }
 
 
+function computeLength(data) {
+    if(data instanceof Array) {
+        return data.length;
+    } else {
+        var len = 0;
+        var keys = Object.keys(data);
+        for(let i=0; i<keys.length; i++) {
+            let key = keys[i];
+            len += data[key].length;
+        }
+        return len;
+    }
+}
+
+function mapShort(data) {
+    if(data instanceof Array) {
+        return data.map(change => change.shortMessage);
+    } else {
+        let keys = Object.keys(data);
+        for(let i=0; i<keys.length; i++) {
+            let key = keys[i];
+            data[key] = data[key].map(change => change.shortMessage);
+        }
+        return data;
+    }
+
+}
