@@ -61,7 +61,8 @@ class ProcessScheduler extends EventEmitter {
             this.schedulers.set(options.id, nodeSchedule.scheduleJob(options.cronRule, () => {
                 this._queueProcess(options);
             }))
-        } else {
+        }
+        if(options.immediate || !options.cronRule && options.immediate === undefined){
             this._queueProcess(options);
         }
     }
