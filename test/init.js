@@ -3,7 +3,7 @@
 const ProcessScheduler = require('..');
 const path = require('path');
 
-describe.only('init', function () {
+describe('init', function () {
     it('should throw if id not defined', function () {
         var config = {threads: 2};
         var schedule = [
@@ -14,8 +14,8 @@ describe.only('init', function () {
 
         var scheduler = new ProcessScheduler(config);
         (function() {
-            scheduler.schedule(schedule).should.throw();
-        }).should.throw();
+            scheduler.schedule(schedule);
+        }).should.throw(/id is mandatory/);
     });
 
     it('should throw if worker not defined', function () {
@@ -28,8 +28,8 @@ describe.only('init', function () {
 
         var scheduler = new ProcessScheduler(config);
         (function() {
-            scheduler.schedule(schedule).should.throw();
-        }).should.throw();
+            scheduler.schedule(schedule);
+        }).should.throw(/worker is mandatory/);
     });
 
     it('should throw if circular dependency', function () {
@@ -49,7 +49,7 @@ describe.only('init', function () {
 
         var scheduler = new ProcessScheduler(config);
         (function() {
-            scheduler.schedule(schedule).should.throw();
-        }).should.throw();
+            scheduler.schedule(schedule);
+        }).should.throw(/circular/);
     });
 });
