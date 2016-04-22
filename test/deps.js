@@ -3,7 +3,7 @@
 const path = require('path');
 const helper = require('./helper');
 
-describe('success', () => {
+describe('dependencies', () => {
     it('deps non-concurrent', function () {
         var config = {
             threads: 2
@@ -59,9 +59,6 @@ describe('success', () => {
         var expect = [
             {status: 'queued', id: 'p1'},
             {status: 'running', id: 'p1'},
-            {status: 'queued', id: 'p2'},
-            {status: 'running', id: 'p2'},
-            {status: 'success', id: 'p2'},
             {status: 'queued', id: 'p2'},
             {status: 'running', id: 'p2'},
             {status: 'success', id: 'p2'},

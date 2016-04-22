@@ -2,7 +2,7 @@
 
 const circular = require('../src/util/circular');
 
-describe('circular dependencies', function () {
+describe('circular dependencies schema', function () {
     it('has a simple circular dependencies', function () {
         var m = objToMap({
             a: {
@@ -53,7 +53,12 @@ describe('circular dependencies', function () {
 
         circular(m).should.equal(false);
     });
+
+    it('launches scheduler with a circular dependency', function () {
+
+    });
 });
+
 
 function objToMap(obj) {
     let map = new Map();

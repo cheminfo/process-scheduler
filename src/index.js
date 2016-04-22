@@ -32,30 +32,38 @@ class ProcessScheduler extends EventEmitter {
         for (let key in this.threads) {
             this.totalThreads += this.threads[key];
         }
-
-        this._addProcess(options.processes || []);
     }
 
     schedule(options) {
-        if(typeof options === 'string') {
-            var opts = this._registered.get(options);
-            if(!opts) {
-                throw new Error('Cannot schedule unregistered process ' + options);
-            }
-            options = opts;
-        }
-        this._addProcess(options);
-    }
-
-    _addProcess(options) {
         if (options instanceof Array) {
             for (let i = 0; i < options.length; i++) {
-                this._addProcess(options[i]);
+                this._register(options[i]);
+            }
+            for (let i = 0; i < options.length; i++) {
+                this._schedule(options[i].id);
             }
             return;
+        } else {
+            this._register(options);
+            this._schedule(options.id);
         }
+    }
 
+    _schedule(id) {
+        var options = this._registered.get(id);
+        if(!options) throw new Error('unexpected');
+        if (options.cronRule) {
+            var scheduler = this.schedulers.get(options.id);
+            if (scheduler) scheduler.cancel();
+            this.schedulers.set(options.id, nodeSchedule.scheduleJob(options.cronRule, () => {
+                this._queueProcess(options);
+            }))
+        } else {
+            this._queueProcess(options);
+        }
+    }
 
+    _register(options) {
         if (!options.id) {
             throw new Error('id is mandatory');
         }
@@ -82,23 +90,30 @@ class ProcessScheduler extends EventEmitter {
                 this._concurrencyRules.get(options.id).add(id);
             }
         }
-        
-        this._registered.set(options.id, options);
+
+        if (!arguments[1]) {
+            this._registered.set(options.id, options);
+        }
         this._checkCircular(options.id);
-        
-        if (options.cronRule) {
-            var scheduler = this.schedulers.get(options.id);
-            if (scheduler) scheduler.cancel();
-            this.schedulers.set(options.id, nodeSchedule.scheduleJob(options.cronRule, () => {
-                this._queueProcess(options);
-            }))
+    }
+
+    trigger(id) {
+        if(typeof id === 'string') {
+            var options = this._registered.get(id);
         } else {
-            this._queueProcess(options);
+            options = id;
+        }
+        options = Object.assign({}, options, {immediate: true, cronRule: undefined});
+        if (options) {
+            this.schedule(options, true)
+        } else {
+            throw new Error('Cannot trigger unregistered process ' + options);
         }
     }
 
+
     _checkCircular(id) {
-        if(circular(this._registered)) {
+        if (circular(this._registered)) {
             this._registered.delete(id);
             throw new Error('Found circular dependency');
         }
@@ -109,16 +124,6 @@ class ProcessScheduler extends EventEmitter {
         var id = options.id;
         if (this._queued.has(id)) {
             return;
-        }
-
-        // The setTimeout ensure that if cronjobs execute roughly at the same time
-        // The are added to the queue before their dependencies
-        if (options.deps) {
-            setTimeout(() => {
-                for (let i = 0; i < options.deps.length; i++) {
-                    this.schedule(options.deps[i]);
-                }
-            }, 250);
         }
 
         if (!options) {
@@ -204,6 +209,12 @@ class ProcessScheduler extends EventEmitter {
         });
 
         childProcess.send(next.arg);
+
+        if (next.deps) {
+            for (let i = 0; i < next.deps.length; i++) {
+                this.trigger(next.deps[i]);
+            }
+        }
 
         this._runNext();
     }
