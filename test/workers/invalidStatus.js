@@ -5,4 +5,5 @@ process.on('message', function (data) {
         status: 'something invalid',
         message: 'none'
     });
+    process.exit(0);
 });

@@ -98,7 +98,7 @@ class ProcessScheduler extends EventEmitter {
                 for (let i = 0; i < options.deps.length; i++) {
                     this._addProcess(options.deps[i]);
                 }
-            }, 1000);
+            }, 250);
         }
 
         if (!options) {
