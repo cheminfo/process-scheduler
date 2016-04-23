@@ -200,6 +200,11 @@ class ProcessScheduler extends EventEmitter {
                     status: 'error',
                     message: 'worker error'
                 });
+            } else {
+                handleMessage.call(this, next, {
+                    type: 'done',
+                    status: 'success'
+                });
             }
         });
 
@@ -253,6 +258,10 @@ function setStatus(obj, status, emitChange) {
 }
 
 function handleMessage(queued, message) {
+    if(!this._queued.get(queued.id)) {
+        // Has already been handled and removed from queue
+        return;
+    }
     if(message.type === 'done') {
         if (!messageValid(message)) {
             message = {
