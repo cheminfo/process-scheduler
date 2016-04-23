@@ -196,6 +196,7 @@ class ProcessScheduler extends EventEmitter {
         childProcess.on('exit', msg => {
             if (msg > 0) {
                 handleMessage.call(this, next, {
+                    type: 'done',
                     status: 'error',
                     message: 'worker error'
                 });
@@ -252,21 +253,33 @@ function setStatus(obj, status, emitChange) {
 }
 
 function handleMessage(queued, message) {
-    if (!messageValid(message)) {
-        message = {
-            status: 'error',
-            message: 'Process sent invalid message'
+    if(message.type === 'done') {
+        if (!messageValid(message)) {
+            message = {
+                status: 'error',
+                message: 'Process sent invalid message'
+            }
         }
+        queued.message = message.message;
+        this._queued.delete(queued.id);
+        setStatus.call(this, queued, message.status, true);
+        this._runNext();
+    } else {
+        var msg = Object.assign(queued);
+        msg.message = message;
+        this.emit('message', msg);
     }
-    queued.message = message.message;
-    this._queued.delete(queued.id);
-    setStatus.call(this, queued, message.status, true);
-    this._runNext();
 }
 
 function messageValid(message) {
     if (message === null || typeof message !== 'object') {
         return false;
+    }
+    if(!message.type) {
+        return false;
+    }
+    if(message.type === 'finished') {
+
     }
     return constants.validStatus.indexOf(message.status) !== -1;
 }
