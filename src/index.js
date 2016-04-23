@@ -189,6 +189,7 @@ class ProcessScheduler extends EventEmitter {
         next.stdout = '';
 
         setStatus.call(this, next, 'running', true);
+        next.started = Date.now();
         var childProcess = fork(next.worker, {silent: true});
         next.process = childProcess;
         childProcess.on('message', msg => {
@@ -202,6 +203,11 @@ class ProcessScheduler extends EventEmitter {
                     status: 'error',
                     message: 'worker error'
                 });
+                if(next.retryTimeout) {
+                    setTimeout(() => {
+                        this.trigger(next.id);
+                    }, next.retryTimeout);
+                }
             } else {
                 handleMessage.call(this, next, {
                     type: 'done',
@@ -265,6 +271,7 @@ function handleMessage(queued, message) {
         return;
     }
     if(message.type === 'done') {
+        queued.ended = Date.now();
         if (!messageValid(message)) {
             message = {
                 status: 'error',

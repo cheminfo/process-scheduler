@@ -105,6 +105,29 @@ describe('success', () => {
             change: ['id', 'status', 'message']
         };
         return helper.testSchedule({config, schedule, expect, keepProperties});
-    })
+    });
+
+    it.only('retry with a timeout', function () {
+        return helper.testSchedule({
+            config: {threads: 2},
+            schedule: [
+                {
+                    id: 'p1',
+                    worker: path.join(__dirname, 'workers/retry.js'),
+                    retryTimeout: 10
+                }
+            ],
+            expect: {
+                change: [
+                    {status: 'queued', id: 'p1'},
+                    {status: 'running', id: 'p1'},
+                    {status: 'error', id: 'p1'},
+                    {status: 'queued', id: 'p1'},
+                    {status: 'running', id: 'p1'},
+                    {status: 'error', id: 'p1'}
+                ]
+            }
+        })
+    });
 
 });
