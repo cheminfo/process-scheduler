@@ -21,20 +21,22 @@ describe('success', () => {
         ];
 
         var expect = {
-            p1: [
-                {status: 'queued', id: 'p1'},
-                {status: 'running', id: 'p1'},
-                {status: 'success', id: 'p1'}
-            ],
-            p2: [
-                {status: 'queued', id: 'p2'},
-                {status: 'running', id: 'p2'},
-                {status: 'success', id: 'p2'}
-            ]
+            change: {
+                p1: [
+                    {status: 'queued', id: 'p1'},
+                    {status: 'running', id: 'p1'},
+                    {status: 'success', id: 'p1'}
+                ],
+                p2: [
+                    {status: 'queued', id: 'p2'},
+                    {status: 'running', id: 'p2'},
+                    {status: 'success', id: 'p2'}
+                ]
+            }
         };
 
 
-        return helper.testSchedule(config, schedule, expect, true);
+        return helper.testSchedule({config, schedule, expect, groupById: true});
     });
 
     it('non-concurrent thread-limited', function () {
@@ -53,17 +55,19 @@ describe('success', () => {
             }
         ];
 
-        var expect = [
-            {status: 'queued', id: 'p1'},
-            {status: 'running', id: 'p1'},
-            {status: 'queued', id: 'p2'},
-            {status: 'success', id: 'p1'},
-            {status: 'running', id: 'p2'},
-            {status: 'success', id: 'p2'}
-        ];
+        var expect = {
+            change: [
+                {status: 'queued', id: 'p1'},
+                {status: 'running', id: 'p1'},
+                {status: 'queued', id: 'p2'},
+                {status: 'success', id: 'p1'},
+                {status: 'running', id: 'p2'},
+                {status: 'success', id: 'p2'}
+            ]
+        };
 
 
-        return helper.testSchedule(config, schedule, expect);
+        return helper.testSchedule({config, schedule, expect});
     });
 
     it('concurrent', function () {
@@ -83,17 +87,18 @@ describe('success', () => {
             }
         ];
 
-        var expect = [
-            {status: 'queued', id: 'p1'},
-            {status: 'running', id: 'p1'},
-            {status: 'queued', id: 'p2'},
-            {status: 'success', id: 'p1'},
-            {status: 'running', id: 'p2'},
-            {status: 'success', id: 'p2'}
-        ];
+        var expect = {
+            change: [
+                {status: 'queued', id: 'p1'},
+                {status: 'running', id: 'p1'},
+                {status: 'queued', id: 'p2'},
+                {status: 'success', id: 'p1'},
+                {status: 'running', id: 'p2'},
+                {status: 'success', id: 'p2'}
+            ]
+        };
 
-
-        return helper.testSchedule(config, schedule, expect);
-    })
+        return helper.testSchedule({config, schedule, expect});
+    });
 
 });

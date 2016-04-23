@@ -24,17 +24,19 @@ describe('dependencies', () => {
 
         ];
 
-        var expect = [
-            {status: 'queued', id: 'p1'},
-            {status: 'running', id: 'p1'},
-            {status: 'queued', id: 'p2'},
-            {status: 'running', id: 'p2'},
-            {status: 'success', id: 'p2'},
-            {status: 'success', id: 'p1'}
-        ];
+        var expect = {
+            change: [
+                {status: 'queued', id: 'p1'},
+                {status: 'running', id: 'p1'},
+                {status: 'queued', id: 'p2'},
+                {status: 'running', id: 'p2'},
+                {status: 'success', id: 'p2'},
+                {status: 'success', id: 'p1'}
+            ]
+        };
 
 
-        return helper.testSchedule(config, schedule, expect);
+        return helper.testSchedule({config, schedule, expect});
     });
 
     it('deps non-concurrent using id', function () {
@@ -56,17 +58,19 @@ describe('dependencies', () => {
 
         ];
 
-        var expect = [
-            {status: 'queued', id: 'p1'},
-            {status: 'running', id: 'p1'},
-            {status: 'queued', id: 'p2'},
-            {status: 'running', id: 'p2'},
-            {status: 'success', id: 'p2'},
-            {status: 'success', id: 'p1'}
-        ];
+        var expect = {
+            change: [
+                {status: 'queued', id: 'p1'},
+                {status: 'running', id: 'p1'},
+                {status: 'queued', id: 'p2'},
+                {status: 'running', id: 'p2'},
+                {status: 'success', id: 'p2'},
+                {status: 'success', id: 'p1'}
+            ]
+        };
 
 
-        return helper.testSchedule(config, schedule, expect);
+        return helper.testSchedule({config, schedule, expect});
     });
 
     it('deps concurrent', function () {
@@ -90,17 +94,19 @@ describe('dependencies', () => {
 
         ];
 
-        var expect = [
-            {status: 'queued', id: 'p1'},
-            {status: 'running', id: 'p1'},
-            {status: 'queued', id: 'p2'},
-            {status: 'success', id: 'p1'},
-            {status: 'running', id: 'p2'},
-            {status: 'success', id: 'p2'}
-        ];
+        var expect = {
+            change: [
+                {status: 'queued', id: 'p1'},
+                {status: 'running', id: 'p1'},
+                {status: 'queued', id: 'p2'},
+                {status: 'success', id: 'p1'},
+                {status: 'running', id: 'p2'},
+                {status: 'success', id: 'p2'}
+            ]
+        };
 
 
-        return helper.testSchedule(config, schedule, expect);
+        return helper.testSchedule({config, schedule, expect});
     });
 
     it('deps concurrent using id', function () {
@@ -114,7 +120,7 @@ describe('dependencies', () => {
                 arg: {timeout: 500},
                 worker: path.join(__dirname, 'workers/timeout.js'),
                 deps: ['p2'],
-                noConcurrency:['p2']
+                noConcurrency: ['p2']
             },
             {
                 id: 'p2',
@@ -123,16 +129,18 @@ describe('dependencies', () => {
 
         ];
 
-        var expect = [
-            {status: 'queued', id: 'p1'},
-            {status: 'running', id: 'p1'},
-            {status: 'queued', id: 'p2'},
-            {status: 'success', id: 'p1'},
-            {status: 'running', id: 'p2'},
-            {status: 'success', id: 'p2'}
-        ];
+        var expect = {
+            change: [
+                {status: 'queued', id: 'p1'},
+                {status: 'running', id: 'p1'},
+                {status: 'queued', id: 'p2'},
+                {status: 'success', id: 'p1'},
+                {status: 'running', id: 'p2'},
+                {status: 'success', id: 'p2'}
+            ]
+        };
 
 
-        return helper.testSchedule(config, schedule, expect);
+        return helper.testSchedule({config, schedule, expect});
     });
 });

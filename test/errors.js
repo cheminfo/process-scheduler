@@ -16,14 +16,16 @@ describe('success', () => {
             }
         ];
 
-        var expect = [
-            {status: 'queued', id: 'p1'},
-            {status: 'running', id: 'p1'},
-            {status: 'error', id: 'p1'}
-        ];
+        var expect = {
+            change: [
+                {status: 'queued', id: 'p1'},
+                {status: 'running', id: 'p1'},
+                {status: 'error', id: 'p1'}
+            ]
+        };
 
 
-        return helper.testSchedule(config, schedule, expect);
+        return helper.testSchedule({config, schedule, expect});
     });
 
     it('invalid status', function () {
@@ -38,14 +40,20 @@ describe('success', () => {
             }
         ];
 
-        var expect = [
-            {status: 'queued', id: 'p1'},
-            {status: 'running', id: 'p1'},
-            {status: 'error', id: 'p1', message: 'Process sent invalid message'}
-        ];
+        var expect = {
+            change: [
+                {status: 'queued', id: 'p1'},
+                {status: 'running', id: 'p1'},
+                {status: 'error', id: 'p1', message: 'Process sent invalid message'}
+            ]
+        };
+
+        var keepProperties = {
+            change: ['id', 'status', 'message']
+        };
 
 
-        return helper.testSchedule(config, schedule, expect);
+        return helper.testSchedule({config, schedule, expect, keepProperties});
     });
 
     it('script error', function () {
@@ -60,16 +68,20 @@ describe('success', () => {
             }
         ];
 
-        var expect = [
-            {status: 'queued', id: 'p1'},
-            {status: 'running', id: 'p1'},
-            {status: 'error', id: 'p1', message: 'worker error'}
-        ];
+        var expect = {
+            change: [
+                {status: 'queued', id: 'p1'},
+                {status: 'running', id: 'p1'},
+                {status: 'error', id: 'p1', message: 'worker error'}
+            ]
+        };
+
+        var keepProperties = {
+            change: ['id', 'status', 'message']
+        };
 
 
-        return helper.testSchedule(config, schedule, expect).then(data => {
-            data[2].originalMessage.stderr.should.not.be.empty();
-        });
+        return helper.testSchedule({config, schedule, expect, keepProperties});
     });
 
     it('worker missing file', function () {
@@ -81,13 +93,18 @@ describe('success', () => {
             }
         ];
 
-        var expect = [
-            {status: 'queued', id: 'p1'},
-            {status: 'running', id: 'p1'},
-            {status: 'error', id: 'p1', message: 'worker error'}
-        ];
-        
-        return helper.testSchedule(config, schedule, expect);
+        var expect = {
+            change: [
+                {status: 'queued', id: 'p1'},
+                {status: 'running', id: 'p1'},
+                {status: 'error', id: 'p1', message: 'worker error'}
+            ]
+        };
+
+        var keepProperties = {
+            change: ['id', 'status', 'message']
+        };
+        return helper.testSchedule({config, schedule, expect, keepProperties});
     })
 
 });

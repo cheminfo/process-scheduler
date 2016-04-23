@@ -275,7 +275,7 @@ function handleMessage(queued, message) {
         this._runNext();
     } else {
         var msg = Object.assign(queued);
-        msg.message = message;
+        msg.data = message;
         this.emit('message', msg);
     }
 }
