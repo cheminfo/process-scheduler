@@ -144,6 +144,7 @@ class ProcessScheduler extends EventEmitter {
 
         options = Object.assign({}, options);
         options.seqId = this._seqId++;
+        options.uid = '' + options.seqId + '-' + Date.now();
         setStatus.call(this, options, 'queued', true);
         this._queued.set(id, options);
         this._runNext();
@@ -189,6 +190,7 @@ class ProcessScheduler extends EventEmitter {
 
         setStatus.call(this, next, 'running', true);
         var childProcess = fork(next.worker, {silent: true});
+        next.process = childProcess;
         childProcess.on('message', msg => {
             handleMessage.call(this, next, msg);
         });
