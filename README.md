@@ -28,8 +28,13 @@ Features:
 
 `Events`:
 - `change`: notifies a change of status. An object with the follwing structure is passed:
-  - `id`: the id of the process that updated its status
+  - `id`: id of the process configuration that launched the process
+  - `uid`: the id of the process that updated its status
   - `status`: Possible status are `queued`, `running`, `success`, `error`
   - `message`: the error message if `status` is `error`.
+- `message`: notifies that process has sent a message. The message sent by the process is in the `data` property
+  - `id`: id of the process configuration thaht lanuched the process
+  - `uid`: id of the process that sent a message
+  - `data`: data sent by the process
 
 
