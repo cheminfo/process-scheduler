@@ -107,7 +107,7 @@ describe('success', () => {
         return helper.testSchedule({config, schedule, expect, keepProperties});
     });
 
-    it.only('retry with a timeout', function () {
+    it('retry with a timeout', function () {
         return helper.testSchedule({
             config: {threads: 2},
             schedule: [
