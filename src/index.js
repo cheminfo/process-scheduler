@@ -50,7 +50,7 @@ class ProcessScheduler extends EventEmitter {
 
     _schedule(id) {
         var options = this._registered.get(id);
-        if(!options) {
+        if (!options) {
             console.warn('schedule had no effect (tried to schedule unregistered process)');
             return;
         }
@@ -61,7 +61,7 @@ class ProcessScheduler extends EventEmitter {
                 this._queueProcess(options);
             }))
         }
-        if(options.immediate || !options.cronRule && options.immediate === undefined){
+        if (options.immediate || !options.cronRule && options.immediate === undefined) {
             this._queueProcess(options);
         }
     }
@@ -101,7 +101,7 @@ class ProcessScheduler extends EventEmitter {
     }
 
     trigger(id) {
-        if(typeof id === 'string') {
+        if (typeof id === 'string') {
             var options = this._registered.get(id);
         } else {
             options = id;
@@ -193,27 +193,27 @@ class ProcessScheduler extends EventEmitter {
         var childProcess = fork(next.worker, {silent: true});
         next.process = childProcess;
         childProcess.on('message', msg => {
+            console.log('messsage', next.id, msg)
             handleMessage.call(this, next, msg);
         });
 
         childProcess.on('exit', msg => {
+            var status, message;
             if (msg > 0) {
-                handleMessage.call(this, next, {
-                    type: 'done',
-                    status: 'error',
-                    message: 'worker error'
-                });
-                if(next.retryTimeout) {
+                status = 'error';
+                message = 'worker error';
+                if (next.retryTimeout) {
                     setTimeout(() => {
                         this.trigger(next.id);
                     }, next.retryTimeout);
                 }
             } else {
-                handleMessage.call(this, next, {
-                    type: 'done',
-                    status: 'success'
-                });
+                status = 'success';
             }
+            next.message = message;
+            this._queued.delete(next.id);
+            setStatus.call(this, next, status, true);
+            this._runNext();
         });
 
         childProcess.on('error', msg => {
@@ -257,6 +257,7 @@ function getByStatus(m, status) {
 }
 
 function setStatus(obj, status, emitChange) {
+    console.log(obj.id, status);
     if (obj.status !== status) {
         obj.status = status;
         if (emitChange) {
@@ -266,40 +267,9 @@ function setStatus(obj, status, emitChange) {
 }
 
 function handleMessage(queued, message) {
-    if(!this._queued.get(queued.id)) {
-        // Has already been handled and removed from queue
-        return;
-    }
-    if(message.type === 'done') {
-        queued.ended = Date.now();
-        if (!messageValid(message)) {
-            message = {
-                status: 'error',
-                message: 'Process sent invalid message'
-            }
-        }
-        queued.message = message.message;
-        this._queued.delete(queued.id);
-        setStatus.call(this, queued, message.status, true);
-        this._runNext();
-    } else {
-        var msg = Object.assign(queued);
-        msg.data = message;
-        this.emit('message', msg);
-    }
-}
-
-function messageValid(message) {
-    if (message === null || typeof message !== 'object') {
-        return false;
-    }
-    if(!message.type) {
-        return false;
-    }
-    if(message.type === 'finished') {
-
-    }
-    return constants.validStatus.indexOf(message.status) !== -1;
+    var msg = Object.assign(queued);
+    msg.data = message;
+    this.emit('message', msg);
 }
 
 module.exports = ProcessScheduler;

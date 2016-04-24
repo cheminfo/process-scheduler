@@ -143,4 +143,35 @@ describe('dependencies', () => {
 
         return helper.testSchedule({config, schedule, expect});
     });
+
+    it('dependencies scheduled when process running', function () {
+        return helper.testSchedule({
+            config: {threads: 1},
+            schedule: [
+                {
+                    id: 'p1',
+                    worker: path.join(__dirname, 'workers/timeout.js'),
+                    arg: {timeout: 100}
+                },
+                {
+                    id: 'p2',
+                    worker: path.join(__dirname, 'workers/success.js'),
+                    deps: ['p1']
+                }
+            ],
+            expect: {
+                change: [
+                    {id: 'p1', status: 'queued'},
+                    {id: 'p1', status: 'running'},
+                    {id: 'p2', status: 'queued'},
+                    {id: 'p1', status: 'success'},
+                    {id: 'p2', status: 'running'},
+                    {id: 'p1', status: 'queued'},
+                    {id: 'p2', status: 'success'},
+                    {id: 'p1', status: 'running'},
+                    {id: 'p1', status: 'success'}
+                ]
+            }
+        })
+    });
 });

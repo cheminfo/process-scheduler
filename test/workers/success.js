@@ -1,9 +1,3 @@
 'use strict';
 
-process.on('message', function (data) {
-    process.send({
-        type: 'done',
-        status: 'success'
-    });
-    process.exit(0);
-});
+// This will exit with status 0 which implies success
