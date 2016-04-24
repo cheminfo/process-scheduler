@@ -144,7 +144,7 @@ class ProcessScheduler extends EventEmitter {
 
         options = Object.assign({}, options);
         options.seqId = this._seqId++;
-        options.uid = '' + options.seqId + '-' + Date.now();
+        options.pid = '' + options.seqId + '-' + Date.now();
         setStatus.call(this, options, 'queued', true);
         this._queued.set(id, options);
         this._runNext();
