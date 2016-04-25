@@ -193,7 +193,6 @@ class ProcessScheduler extends EventEmitter {
         var childProcess = fork(next.worker, {silent: true});
         next.process = childProcess;
         childProcess.on('message', msg => {
-            console.log('messsage', next.id, msg)
             handleMessage.call(this, next, msg);
         });
 
@@ -257,7 +256,6 @@ function getByStatus(m, status) {
 }
 
 function setStatus(obj, status, emitChange) {
-    console.log(obj.id, status);
     if (obj.status !== status) {
         obj.status = status;
         if (emitChange) {
