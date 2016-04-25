@@ -207,10 +207,10 @@ class ProcessScheduler extends EventEmitter {
             if (msg > 0) {
                 status = 'error';
                 message = 'worker error';
-                if (next.retryTimeout) {
+                if (typeof next.retryTimeout === 'number') {
                     setTimeout(() => {
                         this.trigger(next.id);
-                    }, next.retryTimeout);
+                    }, next.retryTimeout * 1000);
                 }
             } else {
                 status = 'success';

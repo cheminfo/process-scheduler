@@ -25,7 +25,7 @@ Features:
   - `deps`: an array of process ids that should be triggered when this process is triggered. If the appropriate `noConcurrency` rule exists, the depenency processes will be executed only after this process has finished. The `deps` array can also nest an object with the `options` structure. `scheduler.schedule` will fail if circular dependencies are detected.
   - `cronRule`: a cron rule for executing the process. If not given the process is triggered once immediatly. See [node-schedule](https://github.com/node-schedule/node-schedule) for accepted input.
   - `immediate`: `true` or `false` weather to execute the process once immediately or not. If `undefined` the process is executed immediately only if no `cronRule` is given
-  - `retryTimeout`: timeout in milliseconds after which the process should be restarted in case of failure
+  - `retryTimeout`: timeout in seconds after which the process should be restarted in case of failure
 
 `Events`:
 - `change`: notifies a change of status. An object with the follwing structure is passed:

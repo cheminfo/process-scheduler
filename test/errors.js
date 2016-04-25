@@ -86,7 +86,7 @@ describe('success', () => {
                 {
                     id: 'p1',
                     worker: path.join(__dirname, 'workers/retry.js'),
-                    retryTimeout: 10
+                    retryTimeout: 0
                 }
             ],
             expect: {
