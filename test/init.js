@@ -52,4 +52,10 @@ describe('init', function () {
             scheduler.schedule(schedule);
         }).should.throw(/circular/);
     });
+    
+    it('should throw if number of threads is not defined', function () {
+        (function () {
+            var scheduler = new ProcessScheduler();
+        }).should.throw(/threads/);
+    })
 });

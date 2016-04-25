@@ -21,6 +21,8 @@ class ProcessScheduler extends EventEmitter {
             this.threads = {
                 default: this.threads
             };
+        } else if(this.threads === undefined) {
+            throw new Error('You must configure the number of threads');
         }
 
         if (!this.threads.default) {
@@ -78,6 +80,10 @@ class ProcessScheduler extends EventEmitter {
 
         if (!options.type) {
             options.type = 'default';
+        }
+
+        if(!this.threads[options.type]) {
+            console.warn('A task will never run because it has not associated number of threads');
         }
 
         if (options.noConcurrency) {
