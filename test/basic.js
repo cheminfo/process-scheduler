@@ -28,16 +28,16 @@ describe('basic', function () {
     });
 
     it('handle immediate option', function () {
-        var config = {threads: 2};
+        var config = {threads: 1};
         var schedule = [
-            {
-                id: 'p1',
-                worker: path.join(__dirname, 'workers/success.js')
-            },
             {
                 id: 'p2',
                 worker: path.join(__dirname, 'workers/success.js'),
                 immediate: false
+            },
+            {
+                id: 'p1',
+                worker: path.join(__dirname, 'workers/success.js')
             }
         ];
 
