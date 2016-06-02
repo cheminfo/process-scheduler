@@ -26,6 +26,11 @@ helper.testSchedule = function testSchedule(options) {
         });
 
         processScheduler.schedule(options.schedule);
+        if (options.trigger) {
+            for (var i = 0; i < options.trigger.length; i++) {
+                processScheduler.trigger(options.trigger[i]);
+            }
+        }
         return prom;
     });
 };
@@ -39,10 +44,10 @@ function spyEvents(options) {
     function keepNeeded(eventName, msg) {
         var props = options.keepProperties[eventName];
         var shortMessage = {};
-        if(props) {
-            for(let i=0; i<props.length; i++) {
-                if(msg[props[i]] !== undefined)
-                shortMessage[props[i]] = msg[props[i]];
+        if (props) {
+            for (let i = 0; i < props.length; i++) {
+                if (msg[props[i]] !== undefined)
+                    shortMessage[props[i]] = msg[props[i]];
             }
         }
         return shortMessage;
@@ -50,7 +55,7 @@ function spyEvents(options) {
 
     function onEvent(eventName) {
         return function (msg) {
-            if(!result[eventName]) {
+            if (!result[eventName]) {
                 result[eventName] = options.groupById ? {} : [];
             }
 
@@ -58,16 +63,16 @@ function spyEvents(options) {
                 id: msg.id,
                 status: msg.status
             };
-            if(msg.message) change.message = msg.message;
+            if (msg.message) change.message = msg.message;
             let toPush = keepNeeded(eventName, msg);
-            if(options.groupById) {
+            if (options.groupById) {
                 result[eventName][change.id] = result[eventName][change.id] || [];
                 result[eventName][change.id].push(toPush);
             } else {
                 result[eventName].push(toPush);
             }
 
-            if(eventName === 'change' && computeLength(result) === computeLength(options.expect)) {
+            if (eventName === 'change' && computeLength(result) === computeLength(options.expect)) {
                 options.scheduler.getQueued().length.should.equal(0);
                 options.scheduler.getRunning().length.should.equal(0);
                 result.should.deepEqual(options.expect);
@@ -78,12 +83,12 @@ function spyEvents(options) {
 }
 
 function computeLength(data) {
-    if(data instanceof Array) {
+    if (data instanceof Array) {
         return data.length;
     } else {
         var len = 0;
         var keys = Object.keys(data);
-        for(let i=0; i<keys.length; i++) {
+        for (let i = 0; i < keys.length; i++) {
             let key = keys[i];
             len += computeLength(data[key]);
         }
@@ -91,16 +96,3 @@ function computeLength(data) {
     }
 }
 
-function mapShort(data) {
-    if(data instanceof Array) {
-        return data.map(change => change.shortMessage);
-    } else {
-        let keys = Object.keys(data);
-        for(let i=0; i<keys.length; i++) {
-            let key = keys[i];
-            data[key] = data[key].map(change => change.shortMessage);
-        }
-        return data;
-    }
-
-}

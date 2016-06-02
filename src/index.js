@@ -100,9 +100,7 @@ class ProcessScheduler extends EventEmitter {
             }
         }
 
-        if (!arguments[1]) {
-            this._registered.set(options.id, options);
-        }
+        this._registered.set(options.id, options);
         this._checkCircular(options.id);
     }
 
