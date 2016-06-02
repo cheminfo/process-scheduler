@@ -21,7 +21,7 @@ class ProcessScheduler extends EventEmitter {
             this.threads = {
                 default: this.threads
             };
-        } else if(this.threads === undefined) {
+        } else if (this.threads === undefined) {
             throw new Error('You must configure the number of threads');
         }
 
@@ -82,7 +82,7 @@ class ProcessScheduler extends EventEmitter {
             options.type = 'default';
         }
 
-        if(!this.threads[options.type]) {
+        if (!this.threads[options.type]) {
             console.warn('A task will never run because it has not associated number of threads');
         }
 
@@ -110,12 +110,13 @@ class ProcessScheduler extends EventEmitter {
         } else {
             options = id;
         }
-        options = Object.assign({}, options, {immediate: true, cronRule: undefined});
-        if (options) {
-            this.schedule(options, true)
-        } else {
+        if (!options) {
             console.warn('trigger had no effect (tried to trigger unregistered process)');
+            return 1;
         }
+        options = Object.assign({}, options, {immediate: true, cronRule: undefined});
+        this.schedule(options, true);
+        return 0;
     }
 
     getQueued() {
