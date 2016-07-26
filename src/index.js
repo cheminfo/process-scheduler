@@ -62,10 +62,12 @@ class ProcessScheduler extends EventEmitter {
             var scheduler = this.schedulers.get(options.id);
             if (scheduler) scheduler.cancel();
             this.schedulers.set(options.id, nodeSchedule.scheduleJob(options.cronRule, () => {
+                debug('queue from cronRule');
                 this._queueProcess(options);
             }))
         }
         if (options.immediate || !options.cronRule && options.immediate === undefined) {
+            debug('queue from immediate');
             this._queueProcess(options);
         }
     }
@@ -108,6 +110,7 @@ class ProcessScheduler extends EventEmitter {
     }
 
     trigger(id) {
+        debug(`trigger ${id}`);
         if (typeof id === 'string') {
             var options = this._registered.get(id);
         } else {
@@ -194,13 +197,13 @@ class ProcessScheduler extends EventEmitter {
             return;
         }
 
-        debug(`found process that can be run: ${next.id}`);
-
         next.stderr = '';
         next.stdout = '';
 
         setStatus.call(this, next, 'running', true);
         next.started = Date.now();
+        debug(`starting a process: ${next.id}`);
+
         var childProcess = fork(next.worker, {silent: true});
         next.process = childProcess;
         childProcess.on('message', msg => {
