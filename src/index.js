@@ -5,6 +5,7 @@ const fork = require('child_process').fork;
 const EventEmitter = require('events');
 const constants = require('./constants');
 const circular = require('./util/circular');
+const debug = require('debug')('process-scheduler');
 
 
 class ProcessScheduler extends EventEmitter {
@@ -51,9 +52,10 @@ class ProcessScheduler extends EventEmitter {
     }
 
     _schedule(id) {
+        debug(`schedule ${id}`);
         var options = this._registered.get(id);
         if (!options) {
-            console.warn('schedule had no effect (tried to schedule unregistered process)');
+            debug('schedule had no effect (tried to schedule unregistered process)');
             return;
         }
         if (options.cronRule) {
@@ -69,6 +71,7 @@ class ProcessScheduler extends EventEmitter {
     }
 
     _register(options) {
+        debug(`register ${options.id}`);
         if (!options.id) {
             throw new Error('id is mandatory');
         }
@@ -83,7 +86,7 @@ class ProcessScheduler extends EventEmitter {
         }
 
         if (!this.threads[options.type]) {
-            console.warn('A task will never run because it has not associated number of threads');
+            debug('A task will never run because it has not associated number of threads');
         }
 
         if (options.noConcurrency) {
@@ -111,7 +114,7 @@ class ProcessScheduler extends EventEmitter {
             options = id;
         }
         if (!options) {
-            console.warn('trigger had no effect (tried to trigger unregistered process)');
+            debug('trigger had no effect (tried to trigger unregistered process)');
             return 1;
         }
         options = Object.assign({}, options, {immediate: true, cronRule: undefined});
@@ -136,14 +139,11 @@ class ProcessScheduler extends EventEmitter {
     }
 
     _queueProcess(options) {
+        debug(`queue process ${options.id}`);
         // Don't queue if already queued
         var id = options.id;
         if (this._queued.has(id)) {
-            return;
-        }
-
-        if (!options) {
-            console.warn('Unreachable');
+            debug(`not queuing ${id}, already in queue`);
             return;
         }
 
@@ -152,15 +152,18 @@ class ProcessScheduler extends EventEmitter {
         options.pid = '' + options.seqId + '-' + Date.now();
         setStatus.call(this, options, 'queued', true);
         this._queued.set(id, options);
+        debug(`${id} added to queue`);
         this._runNext();
     }
 
     _runNext() {
+        debug('run next');
         var running = getByStatus(this._queued, 'running');
         var runningIds = running.map(r => r.id);
 
 
         if (running.length >= this.totalThreads) {
+            debug(`not running next, running threads (${running.length}) reached maximum`);
             return;
         }
 
@@ -187,8 +190,11 @@ class ProcessScheduler extends EventEmitter {
             }
         }
         if (!next) {
+            debug(`not running next (nothing eligible). Queue length is ${queued.length}.`);
             return;
         }
+
+        debug(`found process that can be run: ${next.id}`);
 
         next.stderr = '';
         next.stdout = '';
@@ -221,8 +227,7 @@ class ProcessScheduler extends EventEmitter {
         });
 
         childProcess.on('error', msg => {
-            console.log('child process error', msg);
-            //console.log(msg)
+            debug(`child process error: ${msg}`);
             //handleMessage.call(this, next, {
             //    status: 'error',
             //    message: 'worker error'
