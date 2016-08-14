@@ -27,6 +27,6 @@
   "devDependencies": {
     "mocha": "^3.0.1",
     "mocha-better-spec-reporter": "^3.0.2",
-    "should": "^8.3.1"
+    "should": "^11.1.0"
   }
 }
