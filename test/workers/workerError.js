@@ -1,6 +1,6 @@
 'use strict';
 
 process.on('message', function () {
-    throw new Error('error');
+  throw new Error('error');
 });
 
