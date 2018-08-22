@@ -2,20 +2,20 @@
 
 const path = require('path');
 
-const helper = require('./helper');
+const helper = require('../../testUtil/helper');
 
-describe('basic', function () {
-  it('triggers a process', function () {
+describe('basic', () => {
+  test('triggers a process', () => {
     var config = { threads: 1 };
     var schedule = [
       {
         id: 'p2',
-        worker: path.join(__dirname, 'workers/success.js'),
+        worker: path.join(__dirname, '../../testUtil/workers/success.js'),
         immediate: false
       },
       {
         id: 'p1',
-        worker: path.join(__dirname, 'workers/success.js')
+        worker: path.join(__dirname, '../../testUtil/workers/success.js')
       }
     ];
 
@@ -33,16 +33,16 @@ describe('basic', function () {
     return helper.testSchedule({ config, schedule, expect, trigger: ['p2'] });
   });
 
-  it('retrigger a process has no effect', function () {
+  test('retrigger a process has no effect', () => {
     var config = { threads: 1 };
     var schedule = [
       {
         id: 'p1',
-        worker: path.join(__dirname, 'workers/success.js'),
+        worker: path.join(__dirname, '../../testUtil/workers/success.js')
       },
       {
         id: 'p2',
-        worker: path.join(__dirname, 'workers/success.js')
+        worker: path.join(__dirname, '../../testUtil/workers/success.js')
       }
     ];
 
@@ -60,12 +60,12 @@ describe('basic', function () {
     return helper.testSchedule({ config, schedule, expect, trigger: ['p2'] });
   });
 
-  it('trigger unregistered process has no effect', function () {
+  test('trigger unregistered process has no effect', () => {
     var config = { threads: 1 };
     var schedule = [
       {
         id: 'p1',
-        worker: path.join(__dirname, 'workers/success.js')
+        worker: path.join(__dirname, '../../testUtil/workers/success.js')
       }
     ];
 

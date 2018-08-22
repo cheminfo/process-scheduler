@@ -2,10 +2,10 @@
 
 const path = require('path');
 
-const helper = require('./helper');
+const helper = require('../../testUtil/helper');
 
 describe('success', () => {
-  it('non-concurrent', () => {
+  test('non-concurrent', () => {
     var config = {
       threads: 2
     };
@@ -13,11 +13,11 @@ describe('success', () => {
     var schedule = [
       {
         id: 'p1',
-        worker: path.join(__dirname, 'workers/success.js')
+        worker: path.join(__dirname, '../../testUtil/workers/success.js')
       },
       {
         id: 'p2',
-        worker: path.join(__dirname, 'workers/success.js')
+        worker: path.join(__dirname, '../../testUtil/workers/success.js')
       }
     ];
 
@@ -36,11 +36,10 @@ describe('success', () => {
       }
     };
 
-
     return helper.testSchedule({ config, schedule, expect, groupById: true });
   });
 
-  it('non-concurrent thread-limited', function () {
+  test('non-concurrent thread-limited', () => {
     var config = {
       threads: 1
     };
@@ -48,11 +47,11 @@ describe('success', () => {
     var schedule = [
       {
         id: 'p1',
-        worker: path.join(__dirname, 'workers/success.js')
+        worker: path.join(__dirname, '../../testUtil/workers/success.js')
       },
       {
         id: 'p2',
-        worker: path.join(__dirname, 'workers/success.js')
+        worker: path.join(__dirname, '../../testUtil/workers/success.js')
       }
     ];
 
@@ -67,11 +66,10 @@ describe('success', () => {
       ]
     };
 
-
     return helper.testSchedule({ config, schedule, expect });
   });
 
-  it('thread-limited by type', function () {
+  test('thread-limited by type', () => {
     return helper.testSchedule({
       config: {
         threads: {
@@ -82,18 +80,18 @@ describe('success', () => {
       schedule: [
         {
           id: 'p1',
-          worker: path.join(__dirname, 'workers/timeout.js'),
+          worker: path.join(__dirname, '../../testUtil/workers/timeout.js'),
           type: 'a',
           arg: { timeout: 50 }
         },
         {
           id: 'p2',
-          worker: path.join(__dirname, 'workers/success.js'),
+          worker: path.join(__dirname, '../../testUtil/workers/success.js'),
           type: 'a'
         },
         {
           id: 'p3',
-          worker: path.join(__dirname, 'workers/success.js'),
+          worker: path.join(__dirname, '../../testUtil/workers/success.js'),
           type: 'b'
         }
       ],
@@ -113,7 +111,7 @@ describe('success', () => {
     });
   });
 
-  it('concurrent', function () {
+  test('concurrent', () => {
     var config = {
       threads: 2
     };
@@ -121,12 +119,12 @@ describe('success', () => {
     var schedule = [
       {
         id: 'p1',
-        worker: path.join(__dirname, 'workers/success.js'),
+        worker: path.join(__dirname, '../../testUtil/workers/success.js'),
         noConcurrency: ['p2']
       },
       {
         id: 'p2',
-        worker: path.join(__dirname, 'workers/success.js')
+        worker: path.join(__dirname, '../../testUtil/workers/success.js')
       }
     ];
 
@@ -144,7 +142,7 @@ describe('success', () => {
     return helper.testSchedule({ config, schedule, expect });
   });
 
-  it('same task', function () {
+  test('same task', () => {
     var config = {
       threads: 2
     };
@@ -152,11 +150,11 @@ describe('success', () => {
     var schedule = [
       {
         id: 'p1',
-        worker: path.join(__dirname, 'workers/success.js'),
+        worker: path.join(__dirname, '../../testUtil/workers/success.js')
       },
       {
         id: 'p1',
-        worker: path.join(__dirname, 'workers/success.js')
+        worker: path.join(__dirname, '../../testUtil/workers/success.js')
       }
     ];
 

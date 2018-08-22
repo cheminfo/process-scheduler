@@ -1,9 +1,9 @@
 'use strict';
 
-const circular = require('../src/util/circular');
+const circular = require('../../src/util/circular');
 
-describe('circular dependencies schema', function () {
-  it('has a simple circular dependencies', function () {
+describe('circular dependencies schema', () => {
+  test('has a simple circular dependencies', () => {
     var m = objToMap({
       a: {
         id: 'a',
@@ -15,7 +15,7 @@ describe('circular dependencies schema', function () {
       }
     });
 
-    circular(m).should.equal(true);
+    expect(circular(m)).toBe(true);
 
     m = objToMap({
       a: {
@@ -32,10 +32,10 @@ describe('circular dependencies schema', function () {
       }
     });
 
-    circular(m).should.equal(true);
+    expect(circular(m)).toBe(true);
   });
 
-  it('has no circular dependencies', function () {
+  test('has no circular dependencies', () => {
     var m = objToMap({
       a: {
         id: 'a',
@@ -51,7 +51,7 @@ describe('circular dependencies schema', function () {
       }
     });
 
-    circular(m).should.equal(false);
+    expect(circular(m)).toBe(false);
   });
 });
 

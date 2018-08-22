@@ -1,6 +1,8 @@
 'use strict';
 
-const ProcessScheduler = require('../src/index');
+const expect = global.expect;
+
+const ProcessScheduler = require('../src');
 
 var helper = (module.exports = {});
 
@@ -79,9 +81,9 @@ function spyEvents(options) {
       ) {
         // In case new (unexpected) event arrive meanwhile
         setTimeout(function () {
-          options.scheduler.getQueued().length.should.equal(0);
-          options.scheduler.getRunning().length.should.equal(0);
-          result.should.deepEqual(options.expect);
+          expect(options.scheduler.getQueued()).toHaveLength(0);
+          expect(options.scheduler.getRunning()).toHaveLength(0);
+          expect(result).toEqual(options.expect);
           options.resolve();
         }, 1000);
       }

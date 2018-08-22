@@ -2,10 +2,10 @@
 
 const path = require('path');
 
-const helper = require('./helper');
+const helper = require('../../testUtil/helper');
 
 describe('dependencies', () => {
-  it('deps non-concurrent', function () {
+  test('deps non-concurrent', () => {
     var config = {
       threads: 2
     };
@@ -14,15 +14,14 @@ describe('dependencies', () => {
       {
         id: 'p1',
         arg: { timeout: 500 },
-        worker: path.join(__dirname, 'workers/timeout.js'),
+        worker: path.join(__dirname, '../../testUtil/workers/timeout.js'),
         deps: [
           {
             id: 'p2',
-            worker: path.join(__dirname, 'workers/success.js')
+            worker: path.join(__dirname, '../../testUtil/workers/success.js')
           }
         ]
       }
-
     ];
 
     var expect = {
@@ -36,11 +35,10 @@ describe('dependencies', () => {
       ]
     };
 
-
     return helper.testSchedule({ config, schedule, expect });
   });
 
-  it('deps non-concurrent using id', function () {
+  test('deps non-concurrent using id', () => {
     var config = {
       threads: 2
     };
@@ -49,14 +47,13 @@ describe('dependencies', () => {
       {
         id: 'p1',
         arg: { timeout: 500 },
-        worker: path.join(__dirname, 'workers/timeout.js'),
+        worker: path.join(__dirname, '../../testUtil/workers/timeout.js'),
         deps: ['p2']
       },
       {
         id: 'p2',
-        worker: path.join(__dirname, 'workers/success.js')
+        worker: path.join(__dirname, '../../testUtil/workers/success.js')
       }
-
     ];
 
     var expect = {
@@ -70,11 +67,10 @@ describe('dependencies', () => {
       ]
     };
 
-
     return helper.testSchedule({ config, schedule, expect });
   });
 
-  it('deps concurrent', function () {
+  test('deps concurrent', () => {
     var config = {
       threads: 2
     };
@@ -83,16 +79,15 @@ describe('dependencies', () => {
       {
         id: 'p1',
         arg: { timeout: 500 },
-        worker: path.join(__dirname, 'workers/timeout.js'),
+        worker: path.join(__dirname, '../../testUtil/workers/timeout.js'),
         noConcurrency: ['p2'],
         deps: [
           {
             id: 'p2',
-            worker: path.join(__dirname, 'workers/success.js')
+            worker: path.join(__dirname, '../../testUtil/workers/success.js')
           }
         ]
       }
-
     ];
 
     var expect = {
@@ -106,11 +101,10 @@ describe('dependencies', () => {
       ]
     };
 
-
     return helper.testSchedule({ config, schedule, expect });
   });
 
-  it('deps concurrent using id', function () {
+  test('deps concurrent using id', () => {
     var config = {
       threads: 2
     };
@@ -119,15 +113,14 @@ describe('dependencies', () => {
       {
         id: 'p1',
         arg: { timeout: 500 },
-        worker: path.join(__dirname, 'workers/timeout.js'),
+        worker: path.join(__dirname, '../../testUtil/workers/timeout.js'),
         deps: ['p2'],
         noConcurrency: ['p2']
       },
       {
         id: 'p2',
-        worker: path.join(__dirname, 'workers/success.js')
+        worker: path.join(__dirname, '../../testUtil/workers/success.js')
       }
-
     ];
 
     var expect = {
@@ -141,22 +134,21 @@ describe('dependencies', () => {
       ]
     };
 
-
     return helper.testSchedule({ config, schedule, expect });
   });
 
-  it('dependencies scheduled when process running', function () {
+  test('dependencies scheduled when process running', () => {
     return helper.testSchedule({
       config: { threads: 1 },
       schedule: [
         {
           id: 'p1',
-          worker: path.join(__dirname, 'workers/timeout.js'),
+          worker: path.join(__dirname, '../../testUtil/workers/timeout.js'),
           arg: { timeout: 100 }
         },
         {
           id: 'p2',
-          worker: path.join(__dirname, 'workers/success.js'),
+          worker: path.join(__dirname, '../../testUtil/workers/success.js'),
           deps: ['p1']
         }
       ],

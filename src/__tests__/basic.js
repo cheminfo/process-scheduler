@@ -2,16 +2,16 @@
 
 const path = require('path');
 
-const helper = require('./helper');
+const helper = require('../../testUtil/helper');
 
-describe('basic', function () {
-  it('forward messages', function () {
+describe('basic', () => {
+  test('forward messages', () => {
     return helper.testSchedule({
       config: { threads: 2 },
       schedule: [
         {
           id: 'p1',
-          worker: path.join(__dirname, 'workers/progress.js')
+          worker: path.join(__dirname, '../../testUtil/workers/progress.js')
         }
       ],
       expect: {
@@ -28,17 +28,17 @@ describe('basic', function () {
     });
   });
 
-  it('handle immediate option', function () {
+  test('handle immediate option', () => {
     var config = { threads: 1 };
     var schedule = [
       {
         id: 'p2',
-        worker: path.join(__dirname, 'workers/success.js'),
+        worker: path.join(__dirname, '../../testUtil/workers/success.js'),
         immediate: false
       },
       {
         id: 'p1',
-        worker: path.join(__dirname, 'workers/success.js')
+        worker: path.join(__dirname, '../../testUtil/workers/success.js')
       }
     ];
 

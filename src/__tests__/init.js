@@ -4,22 +4,22 @@ const ProcessScheduler = require('..');
 
 const path = require('path');
 
-describe('init', function () {
-  it('should throw if id not defined', function () {
+describe('init', () => {
+  test('should throw if id not defined', () => {
     var config = { threads: 2 };
     var schedule = [
       {
-        worker: path.join(__dirname, 'workers/success.js')
+        worker: path.join(__dirname, '../../testUtil/workers/success.js')
       }
     ];
 
     var scheduler = new ProcessScheduler(config);
-    (function () {
+    (expect(function () {
       scheduler.schedule(schedule);
-    }.should.throw(/id is mandatory/));
+    }).toThrowError(/id is mandatory/));
   });
 
-  it('should throw if worker not defined', function () {
+  test('should throw if worker not defined', () => {
     var config = { threads: 2 };
     var schedule = [
       {
@@ -28,36 +28,36 @@ describe('init', function () {
     ];
 
     var scheduler = new ProcessScheduler(config);
-    (function () {
+    (expect(function () {
       scheduler.schedule(schedule);
-    }.should.throw(/worker is mandatory/));
+    }).toThrowError(/worker is mandatory/));
   });
 
-  it('should throw if circular dependency', function () {
+  test('should throw if circular dependency', () => {
     var config = { threads: 2 };
     var schedule = [
       {
-        worker: path.join(__dirname, 'workers/success.js'),
+        worker: path.join(__dirname, '../../testUtil/workers/success.js'),
         id: 'p1',
         deps: ['p2']
       },
       {
-        worker: path.join(__dirname, 'workers/success.js'),
+        worker: path.join(__dirname, '../../testUtil/workers/success.js'),
         id: 'p2',
         deps: ['p1']
       }
     ];
 
     var scheduler = new ProcessScheduler(config);
-    (function () {
+    (expect(function () {
       scheduler.schedule(schedule);
-    }.should.throw(/circular/));
+    }).toThrowError(/circular/));
   });
 
-  it('should throw if number of threads is not defined', function () {
-    (function () {
+  test('should throw if number of threads is not defined', () => {
+    (expect(function () {
       // eslint-disable-next-line no-unused-vars
       var scheduler = new ProcessScheduler();
-    }.should.throw(/threads/));
+    }).toThrowError(/threads/));
   });
 });

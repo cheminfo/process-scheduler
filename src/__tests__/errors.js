@@ -2,10 +2,10 @@
 
 const path = require('path');
 
-const helper = require('./helper');
+const helper = require('../../testUtil/helper');
 
 describe('success', () => {
-  it('error status', function () {
+  test('error status', () => {
     var config = {
       threads: 2
     };
@@ -13,7 +13,7 @@ describe('success', () => {
     var schedule = [
       {
         id: 'p1',
-        worker: path.join(__dirname, 'workers/error.js')
+        worker: path.join(__dirname, '../../testUtil/workers/error.js')
       }
     ];
 
@@ -28,7 +28,7 @@ describe('success', () => {
     return helper.testSchedule({ config, schedule, expect });
   });
 
-  it('script error', function () {
+  test('script error', () => {
     var config = {
       threads: 2
     };
@@ -36,7 +36,7 @@ describe('success', () => {
     var schedule = [
       {
         id: 'p1',
-        worker: path.join(__dirname, 'workers/workerError.js')
+        worker: path.join(__dirname, '../../testUtil/workers/workerError.js')
       }
     ];
 
@@ -55,7 +55,7 @@ describe('success', () => {
     return helper.testSchedule({ config, schedule, expect, keepProperties });
   });
 
-  it('worker missing file', function () {
+  test('worker missing file', () => {
     var config = { threads: 2 };
     var schedule = [
       {
@@ -78,13 +78,13 @@ describe('success', () => {
     return helper.testSchedule({ config, schedule, expect, keepProperties });
   });
 
-  it('retry with a timeout', function () {
+  test('retry with a timeout', () => {
     return helper.testSchedule({
       config: { threads: 2 },
       schedule: [
         {
           id: 'p1',
-          worker: path.join(__dirname, 'workers/retry.js'),
+          worker: path.join(__dirname, '../../testUtil/workers/retry.js'),
           retryTimeout: 0
         }
       ],
