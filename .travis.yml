@@ -1,5 +1,8 @@
 language: node_js
 node_js:
-  - "4"
-  - "stable"
+  - 6
+  - 8
+  - 10
+after_success:
+  - npm i -g codecov && codecov
 sudo: false
