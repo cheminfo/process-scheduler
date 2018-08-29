@@ -1,3 +1,13 @@
+<a name="0.1.1"></a>
+## [0.1.1](https://github.com/cheminfo/process-scheduler/compare/v0.1.0...v0.1.1) (2018-08-29)
+
+
+### Bug Fixes
+
+* add missing index.js to npm package ([6814d9a](https://github.com/cheminfo/process-scheduler/commit/6814d9a))
+
+
+
 <a name="0.1.0"></a>
 # [0.1.0](https://github.com/cheminfo/process-scheduler/compare/v0.0.4...v0.1.0) (2018-08-29)
 
