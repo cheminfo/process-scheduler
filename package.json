@@ -1,12 +1,23 @@
 {
   "name": "process-scheduler",
   "version": "0.0.4",
-  "description": "schedule processes with dependencies",
-  "main": "src/index.js",
+  "description": "Schedule processes with dependencies",
+  "main": "./index.js",
+  "types": "./lib/index.d.ts",
+  "files": [
+    "lib"
+  ],
   "scripts": {
-    "test": "jest --runInBand --coverage && npm run eslint",
-    "eslint": "eslint src testUtil",
-    "eslint-fix": "eslint --fix src test"
+    "clean": "rimraf lib",
+    "prepublishOnly": "npm run tsc",
+    "test": "run-s test-only tslint",
+    "test-only": "jest --runInBand",
+    "test-coverage": "npm run test-only -- --coverage",
+    "test-travis": "run-s tslint test-coverage",
+    "tsc": "run-s clean tsc-es5",
+    "tsc-es5": "tsc",
+    "tslint": "tslint --project tsconfig.base.json",
+    "tslint-fix": "npm run tslint -- --fix"
   },
   "repository": {
     "type": "git",
@@ -16,25 +27,41 @@
     "scheduler",
     "processes"
   ],
-  "author": "Daniel Kostro <kostro.d@gmail.com>",
+  "author": "Daniel Kostro",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/cheminfo/process-scheduler/issues"
   },
   "homepage": "https://github.com/cheminfo/process-scheduler#readme",
+  "jest": {
+    "testEnvironment": "node",
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
+  },
+  "devDependencies": {
+    "@types/debug": "0.0.30",
+    "@types/jest": "^23.3.1",
+    "@types/node-schedule": "^1.2.2",
+    "jest": "^23.5.0",
+    "npm-run-all": "^4.1.3",
+    "rimraf": "^2.6.2",
+    "ts-jest": "^23.1.4",
+    "tslint": "^5.11.0",
+    "tslint-config-prettier": "^1.15.0",
+    "typescript": "^3.0.1"
+  },
   "dependencies": {
     "debug": "^3.1.0",
     "node-schedule": "^1.3.0"
-  },
-  "jest": {
-    "testEnvironment": "node"
-  },
-  "devDependencies": {
-    "eslint": "^5.4.0",
-    "eslint-config-cheminfo": "^1.17.3",
-    "eslint-plugin-import": "^2.11.0",
-    "eslint-plugin-jest": "^21.15.1",
-    "jest": "^23.5.0",
-    "mocha-better-spec-reporter": "^3.1.0"
   }
 }

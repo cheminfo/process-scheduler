@@ -1,10 +1,8 @@
-'use strict';
-
-const circular = require('../../src/util/circular');
+import circular from '../util/circular';
 
 describe('circular dependencies schema', () => {
   test('has a simple circular dependencies', () => {
-    var m = objToMap({
+    let m = objToMap({
       a: {
         id: 'a',
         deps: ['b']
@@ -36,7 +34,7 @@ describe('circular dependencies schema', () => {
   });
 
   test('has no circular dependencies', () => {
-    var m = objToMap({
+    const m = objToMap({
       a: {
         id: 'a',
         deps: ['b']
@@ -56,10 +54,9 @@ describe('circular dependencies schema', () => {
 });
 
 function objToMap(obj) {
-  let map = new Map();
-  let keys = Object.keys(obj);
-  for (let i = 0; i < keys.length; i++) {
-    map.set(keys[i], obj[keys[i]]);
+  const map = new Map();
+  for (const key of Object.keys(obj)) {
+    map.set(key, obj[key]);
   }
   return map;
 }

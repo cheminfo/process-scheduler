@@ -1,23 +1,21 @@
-'use strict';
+import * as path from 'path';
 
-const path = require('path');
-
-const helper = require('../../testUtil/helper');
+import { testSchedule } from '../../testUtil/helper';
 
 describe('success', () => {
   test('error status', () => {
-    var config = {
+    const config = {
       threads: 2
     };
 
-    var schedule = [
+    const schedule = [
       {
         id: 'p1',
         worker: path.join(__dirname, '../../testUtil/workers/error.js')
       }
     ];
 
-    var expect = {
+    const expect = {
       change: [
         { status: 'queued', id: 'p1' },
         { status: 'running', id: 'p1' },
@@ -25,22 +23,22 @@ describe('success', () => {
       ]
     };
 
-    return helper.testSchedule({ config, schedule, expect });
+    return testSchedule({ config, schedule, expect });
   });
 
   test('script error', () => {
-    var config = {
+    const config = {
       threads: 2
     };
 
-    var schedule = [
+    const schedule = [
       {
         id: 'p1',
         worker: path.join(__dirname, '../../testUtil/workers/workerError.js')
       }
     ];
 
-    var expect = {
+    const expect = {
       change: [
         { status: 'queued', id: 'p1' },
         { status: 'running', id: 'p1' },
@@ -48,23 +46,23 @@ describe('success', () => {
       ]
     };
 
-    var keepProperties = {
+    const keepProperties = {
       change: ['id', 'status', 'message']
     };
 
-    return helper.testSchedule({ config, schedule, expect, keepProperties });
+    return testSchedule({ config, schedule, expect, keepProperties });
   });
 
   test('worker missing file', () => {
-    var config = { threads: 2 };
-    var schedule = [
+    const config = { threads: 2 };
+    const schedule = [
       {
         id: 'p1',
         worker: path.join(__dirname, 'does/not/exist.js')
       }
     ];
 
-    var expect = {
+    const expect = {
       change: [
         { status: 'queued', id: 'p1' },
         { status: 'running', id: 'p1' },
@@ -72,14 +70,14 @@ describe('success', () => {
       ]
     };
 
-    var keepProperties = {
+    const keepProperties = {
       change: ['id', 'status', 'message']
     };
-    return helper.testSchedule({ config, schedule, expect, keepProperties });
+    return testSchedule({ config, schedule, expect, keepProperties });
   });
 
   test('retry with a timeout', () => {
-    return helper.testSchedule({
+    return testSchedule({
       config: { threads: 2 },
       schedule: [
         {

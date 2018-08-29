@@ -1,12 +1,10 @@
-'use strict';
+import * as path from 'path';
 
-const path = require('path');
-
-const helper = require('../../testUtil/helper');
+import { testSchedule } from '../../testUtil/helper';
 
 describe('basic', () => {
   test('forward messages', () => {
-    return helper.testSchedule({
+    return testSchedule({
       config: { threads: 2 },
       schedule: [
         {
@@ -29,8 +27,8 @@ describe('basic', () => {
   });
 
   test('handle immediate option', () => {
-    var config = { threads: 1 };
-    var schedule = [
+    const config = { threads: 1 };
+    const schedule = [
       {
         id: 'p2',
         worker: path.join(__dirname, '../../testUtil/workers/success.js'),
@@ -42,7 +40,7 @@ describe('basic', () => {
       }
     ];
 
-    var expect = {
+    const expect = {
       change: [
         { id: 'p1', status: 'queued' },
         { id: 'p1', status: 'running' },
@@ -50,6 +48,6 @@ describe('basic', () => {
       ]
     };
 
-    return helper.testSchedule({ config, schedule, expect });
+    return testSchedule({ config, schedule, expect });
   });
 });

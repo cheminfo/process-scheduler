@@ -1,13 +1,11 @@
-'use strict';
+import * as path from 'path';
 
-const path = require('path');
-
-const helper = require('../../testUtil/helper');
+import { testSchedule } from '../../testUtil/helper';
 
 describe('basic', () => {
   test('triggers a process', () => {
-    var config = { threads: 1 };
-    var schedule = [
+    const config = { threads: 1 };
+    const schedule = [
       {
         id: 'p2',
         worker: path.join(__dirname, '../../testUtil/workers/success.js'),
@@ -19,7 +17,7 @@ describe('basic', () => {
       }
     ];
 
-    var expect = {
+    const expect = {
       change: [
         { id: 'p1', status: 'queued' },
         { id: 'p1', status: 'running' },
@@ -30,12 +28,12 @@ describe('basic', () => {
       ]
     };
 
-    return helper.testSchedule({ config, schedule, expect, trigger: ['p2'] });
+    return testSchedule({ config, schedule, expect, trigger: ['p2'] });
   });
 
   test('retrigger a process has no effect', () => {
-    var config = { threads: 1 };
-    var schedule = [
+    const config = { threads: 1 };
+    const schedule = [
       {
         id: 'p1',
         worker: path.join(__dirname, '../../testUtil/workers/success.js')
@@ -46,7 +44,7 @@ describe('basic', () => {
       }
     ];
 
-    var expect = {
+    const expect = {
       change: [
         { id: 'p1', status: 'queued' },
         { id: 'p1', status: 'running' },
@@ -57,19 +55,19 @@ describe('basic', () => {
       ]
     };
 
-    return helper.testSchedule({ config, schedule, expect, trigger: ['p2'] });
+    return testSchedule({ config, schedule, expect, trigger: ['p2'] });
   });
 
   test('trigger unregistered process has no effect', () => {
-    var config = { threads: 1 };
-    var schedule = [
+    const config = { threads: 1 };
+    const schedule = [
       {
         id: 'p1',
         worker: path.join(__dirname, '../../testUtil/workers/success.js')
       }
     ];
 
-    var expect = {
+    const expect = {
       change: [
         { id: 'p1', status: 'queued' },
         { id: 'p1', status: 'running' },
@@ -77,6 +75,6 @@ describe('basic', () => {
       ]
     };
 
-    return helper.testSchedule({ config, schedule, expect, trigger: ['p2'] });
+    return testSchedule({ config, schedule, expect, trigger: ['p2'] });
   });
 });

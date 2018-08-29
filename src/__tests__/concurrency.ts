@@ -1,16 +1,14 @@
-'use strict';
+import * as path from 'path';
 
-const path = require('path');
-
-const helper = require('../../testUtil/helper');
+import { testSchedule } from '../../testUtil/helper';
 
 describe('success', () => {
   test('non-concurrent', () => {
-    var config = {
+    const config = {
       threads: 2
     };
 
-    var schedule = [
+    const schedule = [
       {
         id: 'p1',
         worker: path.join(__dirname, '../../testUtil/workers/success.js')
@@ -21,7 +19,7 @@ describe('success', () => {
       }
     ];
 
-    var expect = {
+    const expect = {
       change: {
         p1: [
           { status: 'queued', id: 'p1' },
@@ -36,15 +34,15 @@ describe('success', () => {
       }
     };
 
-    return helper.testSchedule({ config, schedule, expect, groupById: true });
+    return testSchedule({ config, schedule, expect, groupById: true });
   });
 
   test('non-concurrent thread-limited', () => {
-    var config = {
+    const config = {
       threads: 1
     };
 
-    var schedule = [
+    const schedule = [
       {
         id: 'p1',
         worker: path.join(__dirname, '../../testUtil/workers/success.js')
@@ -55,7 +53,7 @@ describe('success', () => {
       }
     ];
 
-    var expect = {
+    const expect = {
       change: [
         { status: 'queued', id: 'p1' },
         { status: 'running', id: 'p1' },
@@ -66,11 +64,11 @@ describe('success', () => {
       ]
     };
 
-    return helper.testSchedule({ config, schedule, expect });
+    return testSchedule({ config, schedule, expect });
   });
 
   test('thread-limited by type', () => {
-    return helper.testSchedule({
+    return testSchedule({
       config: {
         threads: {
           a: 1,
@@ -112,11 +110,11 @@ describe('success', () => {
   });
 
   test('concurrent', () => {
-    var config = {
+    const config = {
       threads: 2
     };
 
-    var schedule = [
+    const schedule = [
       {
         id: 'p1',
         worker: path.join(__dirname, '../../testUtil/workers/success.js'),
@@ -128,7 +126,7 @@ describe('success', () => {
       }
     ];
 
-    var expect = {
+    const expect = {
       change: [
         { status: 'queued', id: 'p1' },
         { status: 'running', id: 'p1' },
@@ -139,15 +137,15 @@ describe('success', () => {
       ]
     };
 
-    return helper.testSchedule({ config, schedule, expect });
+    return testSchedule({ config, schedule, expect });
   });
 
   test('same task', () => {
-    var config = {
+    const config = {
       threads: 2
     };
 
-    var schedule = [
+    const schedule = [
       {
         id: 'p1',
         worker: path.join(__dirname, '../../testUtil/workers/success.js')
@@ -158,7 +156,7 @@ describe('success', () => {
       }
     ];
 
-    var expect = {
+    const expect = {
       change: [
         { status: 'queued', id: 'p1' },
         { status: 'running', id: 'p1' },
@@ -166,6 +164,6 @@ describe('success', () => {
       ]
     };
 
-    return helper.testSchedule({ config, schedule, expect });
+    return testSchedule({ config, schedule, expect });
   });
 });

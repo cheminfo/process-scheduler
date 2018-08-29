@@ -1,16 +1,14 @@
-'use strict';
+import * as path from 'path';
 
-const path = require('path');
-
-const helper = require('../../testUtil/helper');
+import { testSchedule } from '../../testUtil/helper';
 
 describe('dependencies', () => {
   test('deps non-concurrent', () => {
-    var config = {
+    const config = {
       threads: 2
     };
 
-    var schedule = [
+    const schedule = [
       {
         id: 'p1',
         arg: { timeout: 500 },
@@ -24,7 +22,7 @@ describe('dependencies', () => {
       }
     ];
 
-    var expect = {
+    const expect = {
       change: [
         { status: 'queued', id: 'p1' },
         { status: 'running', id: 'p1' },
@@ -35,15 +33,15 @@ describe('dependencies', () => {
       ]
     };
 
-    return helper.testSchedule({ config, schedule, expect });
+    return testSchedule({ config, schedule, expect });
   });
 
   test('deps non-concurrent using id', () => {
-    var config = {
+    const config = {
       threads: 2
     };
 
-    var schedule = [
+    const schedule = [
       {
         id: 'p1',
         arg: { timeout: 500 },
@@ -56,7 +54,7 @@ describe('dependencies', () => {
       }
     ];
 
-    var expect = {
+    const expect = {
       change: [
         { status: 'queued', id: 'p1' },
         { status: 'running', id: 'p1' },
@@ -67,15 +65,15 @@ describe('dependencies', () => {
       ]
     };
 
-    return helper.testSchedule({ config, schedule, expect });
+    return testSchedule({ config, schedule, expect });
   });
 
   test('deps concurrent', () => {
-    var config = {
+    const config = {
       threads: 2
     };
 
-    var schedule = [
+    const schedule = [
       {
         id: 'p1',
         arg: { timeout: 500 },
@@ -90,7 +88,7 @@ describe('dependencies', () => {
       }
     ];
 
-    var expect = {
+    const expect = {
       change: [
         { status: 'queued', id: 'p1' },
         { status: 'running', id: 'p1' },
@@ -101,15 +99,15 @@ describe('dependencies', () => {
       ]
     };
 
-    return helper.testSchedule({ config, schedule, expect });
+    return testSchedule({ config, schedule, expect });
   });
 
   test('deps concurrent using id', () => {
-    var config = {
+    const config = {
       threads: 2
     };
 
-    var schedule = [
+    const schedule = [
       {
         id: 'p1',
         arg: { timeout: 500 },
@@ -123,7 +121,7 @@ describe('dependencies', () => {
       }
     ];
 
-    var expect = {
+    const expect = {
       change: [
         { status: 'queued', id: 'p1' },
         { status: 'running', id: 'p1' },
@@ -134,11 +132,11 @@ describe('dependencies', () => {
       ]
     };
 
-    return helper.testSchedule({ config, schedule, expect });
+    return testSchedule({ config, schedule, expect });
   });
 
   test('dependencies scheduled when process running', () => {
-    return helper.testSchedule({
+    return testSchedule({
       config: { threads: 1 },
       schedule: [
         {

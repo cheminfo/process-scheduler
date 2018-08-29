@@ -1,10 +1,4 @@
-'use strict';
-
-const expect = global.expect;
-
-const ProcessScheduler = require('../src');
-
-var helper = (module.exports = {});
+import ProcessScheduler from '../src';
 
 const defaultOptions = {
   keepProperties: {
@@ -13,12 +7,12 @@ const defaultOptions = {
   }
 };
 
-helper.testSchedule = function testSchedule(options) {
+export function testSchedule(options) {
   options = Object.assign({}, defaultOptions, options);
   return new Promise((resolve, reject) => {
-    let processScheduler = new ProcessScheduler(options.config);
+    const processScheduler = new ProcessScheduler(options.config);
 
-    var prom = spyEvents({
+    const prom = spyEvents({
       resolve,
       reject,
       expect: options.expect,
@@ -29,27 +23,27 @@ helper.testSchedule = function testSchedule(options) {
 
     processScheduler.schedule(options.schedule);
     if (options.trigger) {
-      for (var i = 0; i < options.trigger.length; i++) {
-        processScheduler.trigger(options.trigger[i]);
+      for (const trigger of options.trigger) {
+        processScheduler.trigger(trigger);
       }
     }
     return prom;
   });
-};
+}
 
 function spyEvents(options) {
-  var result = {};
+  const result = {};
   options.scheduler.on('change', onEvent('change'));
 
   options.scheduler.on('message', onEvent('message'));
 
   function keepNeeded(eventName, msg) {
-    var props = options.keepProperties[eventName];
-    var shortMessage = {};
+    const props = options.keepProperties[eventName];
+    const shortMessage = {};
     if (props) {
-      for (let i = 0; i < props.length; i++) {
-        if (msg[props[i]] !== undefined) {
-          shortMessage[props[i]] = msg[props[i]];
+      for (const prop of props) {
+        if (msg[prop] !== undefined) {
+          shortMessage[prop] = msg[prop];
         }
       }
     }
@@ -57,17 +51,21 @@ function spyEvents(options) {
   }
 
   function onEvent(eventName) {
-    return function (msg) {
+    return (msg) => {
       if (!result[eventName]) {
         result[eventName] = options.groupById ? {} : [];
       }
 
-      let change = {
+      const change = {
         id: msg.id,
-        status: msg.status
+        status: msg.status,
+        message: ''
       };
-      if (msg.message) change.message = msg.message;
-      let toPush = keepNeeded(eventName, msg);
+      if (msg.message) {
+        change.message = msg.message;
+      }
+
+      const toPush = keepNeeded(eventName, msg);
       if (options.groupById) {
         result[eventName][change.id] = result[eventName][change.id] || [];
         result[eventName][change.id].push(toPush);
@@ -80,7 +78,7 @@ function spyEvents(options) {
         computeLength(result) === computeLength(options.expect)
       ) {
         // In case new (unexpected) event arrive meanwhile
-        setTimeout(function () {
+        setTimeout(() => {
           expect(options.scheduler.getQueued()).toHaveLength(0);
           expect(options.scheduler.getRunning()).toHaveLength(0);
           expect(result).toEqual(options.expect);
@@ -95,10 +93,8 @@ function computeLength(data) {
   if (data instanceof Array) {
     return data.length;
   } else {
-    var len = 0;
-    var keys = Object.keys(data);
-    for (let i = 0; i < keys.length; i++) {
-      let key = keys[i];
+    let len = 0;
+    for (const key of Object.keys(data)) {
       len += computeLength(data[key]);
     }
     return len;

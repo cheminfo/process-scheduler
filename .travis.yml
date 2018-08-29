@@ -1,8 +1,7 @@
 language: node_js
 node_js:
-  - 6
-  - 8
   - 10
-after_success:
-  - npm i -g codecov && codecov
-sudo: false
+  - 8
+  - 6
+script: 'npm run test-travis'
+after_script: 'bash <(curl -s https://codecov.io/bash)'
