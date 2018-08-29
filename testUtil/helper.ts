@@ -1,4 +1,4 @@
-import ProcessScheduler from '../src';
+import { ProcessScheduler } from '../src';
 
 const defaultOptions = {
   keepProperties: {

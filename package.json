@@ -2,11 +2,10 @@
   "name": "process-scheduler",
   "version": "0.1.1",
   "description": "Schedule processes with dependencies",
-  "main": "./index.js",
+  "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "files": [
-    "lib",
-    "index.js"
+    "lib"
   ],
   "scripts": {
     "clean": "rimraf lib",

@@ -1,6 +1,6 @@
 import * as path from 'path';
 
-import ProcessScheduler from '..';
+import { ProcessScheduler } from '..';
 
 describe('init', () => {
   test('should throw if id not defined', () => {

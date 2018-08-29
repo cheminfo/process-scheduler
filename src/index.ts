@@ -60,7 +60,7 @@ interface IQueuedProcess extends IProcessOptions {
   deps?: string[];
 }
 
-export default class ProcessScheduler extends (EventEmitter as {
+export class ProcessScheduler extends (EventEmitter as {
   new (): StrictEventEmitter<EventEmitter, IEvents>;
 }) {
   private totalThreads: number;
