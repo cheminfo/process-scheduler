@@ -12,6 +12,19 @@ export interface IProcessSchedulerOptions {
   threads: number | IThreadConfig;
 }
 
+export interface IChangeData {
+  id: string;
+  pid: string;
+  status: string;
+  message?: string;
+}
+
+export interface IMessageData {
+  id: string;
+  pid: string;
+  data: any;
+}
+
 export interface IProcessOptions {
   id: string;
   worker: string;
@@ -349,7 +362,12 @@ function setStatus(
   if (obj.status !== status) {
     obj.status = status;
     if (emitChange) {
-      scheduler.emit('change', obj);
+      scheduler.emit('change', {
+        id: obj.id,
+        pid: obj.pid,
+        status: obj.status,
+        message: obj.message
+      });
     }
   }
 }
@@ -359,7 +377,5 @@ function handleMessage(
   queued: IQueuedProcess,
   message: any
 ) {
-  const msg: any = Object.assign({}, queued);
-  msg.data = message;
-  scheduler.emit('message', msg);
+  scheduler.emit('message', { id: queued.id, pid: queued.pid, data: message });
 }
