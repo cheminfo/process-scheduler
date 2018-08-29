@@ -3,10 +3,16 @@ import { EventEmitter } from 'events';
 
 import * as debugLib from 'debug';
 import * as nodeSchedule from 'node-schedule';
+import StrictEventEmitter from 'strict-event-emitter-types';
 
 import circular from './util/circular';
 
 const debug = debugLib('process-scheduler');
+
+interface IEvents {
+  message: IMessageData;
+  change: IChangeData;
+}
 
 export interface IProcessSchedulerOptions {
   threads: number | IThreadConfig;
@@ -54,7 +60,9 @@ interface IQueuedProcess extends IProcessOptions {
   deps?: string[];
 }
 
-export default class ProcessScheduler extends EventEmitter {
+export default class ProcessScheduler extends (EventEmitter as {
+  new (): StrictEventEmitter<EventEmitter, IEvents>;
+}) {
   private totalThreads: number;
   private threads: IThreadConfig;
   private schedulers: Map<string, nodeSchedule.Job>;
