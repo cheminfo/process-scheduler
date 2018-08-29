@@ -1,3 +1,14 @@
+<a name="0.2.0"></a>
+# [0.2.0](https://github.com/cheminfo/process-scheduler/compare/v0.1.1...v0.2.0) (2018-08-29)
+
+
+### Features
+
+* use named exports ([103a969](https://github.com/cheminfo/process-scheduler/commit/103a969))
+* use strict-event-emitter-types ([a19fe4f](https://github.com/cheminfo/process-scheduler/commit/a19fe4f))
+
+
+
 <a name="0.1.1"></a>
 ## [0.1.1](https://github.com/cheminfo/process-scheduler/compare/v0.1.0...v0.1.1) (2018-08-29)
 
