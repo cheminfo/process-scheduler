@@ -1,3 +1,13 @@
+<a name="0.1.0"></a>
+# [0.1.0](https://github.com/cheminfo/process-scheduler/compare/v0.0.4...v0.1.0) (2018-08-29)
+
+
+### Features
+
+* migrate to TypeScript ([#5](https://github.com/cheminfo/process-scheduler/issues/5)) ([24c1059](https://github.com/cheminfo/process-scheduler/commit/24c1059))
+
+
+
 <a name="0.0.4"></a>
 ## [0.0.4](https://github.com/cheminfo/process-scheduler/compare/v0.0.3...v0.0.4) (2018-04-24)
 

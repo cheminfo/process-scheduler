@@ -1,6 +1,6 @@
 {
   "name": "process-scheduler",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "description": "Schedule processes with dependencies",
   "main": "./index.js",
   "types": "./lib/index.d.ts",
