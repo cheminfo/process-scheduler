@@ -197,6 +197,12 @@ export class ProcessScheduler extends (EventEmitter as {
       );
     }
 
+    this._registered.set(options.id, options);
+    if (circular(this._registered)) {
+      this._registered.delete(options.id);
+      throw new Error('Found circular dependency');
+    }
+
     if (options.noConcurrency) {
       if (!this._concurrencyRules.get(options.id)) {
         this._concurrencyRules.set(options.id, new Set());
@@ -210,16 +216,6 @@ export class ProcessScheduler extends (EventEmitter as {
         concurrencyRules.add(options.id);
         concurrencyRules.add(id);
       }
-    }
-
-    this._registered.set(options.id, options);
-    this._checkCircular(options.id);
-  }
-
-  private _checkCircular(id: string) {
-    if (circular(this._registered)) {
-      this._registered.delete(id);
-      throw new Error('Found circular dependency');
     }
   }
 
