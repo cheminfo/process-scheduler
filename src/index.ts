@@ -14,7 +14,7 @@ interface IEvents {
   change: IChangeData;
 }
 
-export interface IProcessSchedulerOptions {
+export interface IProcessSchedulerConfig {
   threads: number | IThreadConfig;
 }
 
@@ -71,14 +71,14 @@ export class ProcessScheduler extends (EventEmitter as {
   private _queued: Map<string, IQueuedProcess>;
   private _seqId: number;
 
-  constructor(options: IProcessSchedulerOptions) {
+  constructor(config: IProcessSchedulerConfig) {
     super();
 
-    if (typeof options !== 'object' || options === null) {
+    if (typeof config !== 'object' || config === null) {
       throw new TypeError('options object is mandatory');
     }
 
-    const { threads } = options;
+    const { threads } = config;
     if (typeof threads === 'number') {
       this.threads = { default: threads };
     } else if (typeof threads === 'object' && threads !== null) {
