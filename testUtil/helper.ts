@@ -1,14 +1,6 @@
 import { ProcessScheduler } from '../src';
 
-const defaultOptions = {
-  keepProperties: {
-    change: ['status', 'id'],
-    message: ['data']
-  }
-};
-
-export function testSchedule(options) {
-  options = Object.assign({}, defaultOptions, options);
+export function testSchedule(options: any = {}) {
   return new Promise((resolve, reject) => {
     const processScheduler = new ProcessScheduler(options.config);
 
@@ -17,8 +9,7 @@ export function testSchedule(options) {
       reject,
       expect: options.expect,
       groupById: options.groupById,
-      scheduler: processScheduler,
-      keepProperties: options.keepProperties
+      scheduler: processScheduler
     });
 
     processScheduler.schedule(options.schedule);
@@ -37,25 +28,11 @@ function spyEvents(options) {
 
   options.scheduler.on('message', onEvent('message'));
 
-  function keepNeeded(eventName, msg) {
-    const props = options.keepProperties[eventName];
-    const shortMessage = {};
-    if (props) {
-      for (const prop of props) {
-        if (msg[prop] !== undefined) {
-          shortMessage[prop] = msg[prop];
-        }
-      }
-    }
-    return shortMessage;
-  }
-
   function onEvent(eventName) {
     return (msg) => {
       if (!result[eventName]) {
         result[eventName] = options.groupById ? {} : [];
       }
-
       const change = {
         id: msg.id,
         status: msg.status,
@@ -65,12 +42,11 @@ function spyEvents(options) {
         change.message = msg.message;
       }
 
-      const toPush = keepNeeded(eventName, msg);
       if (options.groupById) {
         result[eventName][change.id] = result[eventName][change.id] || [];
-        result[eventName][change.id].push(toPush);
+        result[eventName][change.id].push(msg);
       } else {
-        result[eventName].push(toPush);
+        result[eventName].push(msg);
       }
 
       if (
@@ -81,7 +57,7 @@ function spyEvents(options) {
         setTimeout(() => {
           expect(options.scheduler.getQueued()).toHaveLength(0);
           expect(options.scheduler.getRunning()).toHaveLength(0);
-          expect(result).toEqual(options.expect);
+          expect(result).toMatchObject(options.expect);
           options.resolve();
         }, 1000);
       }

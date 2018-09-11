@@ -22,6 +22,8 @@ export interface IChangeData {
   id: string;
   pid: string;
   status: string;
+  stderr?: string;
+  stdout?: string;
   message?: string;
 }
 
@@ -326,12 +328,14 @@ export class ProcessScheduler extends (EventEmitter as {
       // });
     });
 
+    childProcess.stdout.setEncoding('utf8');
     childProcess.stdout.on('data', (data) => {
-      next.stdout += data.toString();
+      next.stdout += data;
     });
 
+    childProcess.stderr.setEncoding('utf8');
     childProcess.stderr.on('data', (data) => {
-      next.stderr += data.toString();
+      next.stderr += data;
     });
 
     childProcess.send(next.arg);
@@ -370,7 +374,9 @@ function setStatus(
         id: obj.id,
         pid: obj.pid,
         status: obj.status,
-        message: obj.message
+        message: obj.message,
+        stdout: obj.stdout,
+        stderr: obj.stderr
       });
     }
   }

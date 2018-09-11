@@ -38,19 +38,25 @@ describe('success', () => {
       }
     ];
 
-    const expect = {
+    const expected = {
       change: [
         { status: 'queued', id: 'p1' },
         { status: 'running', id: 'p1' },
-        { status: 'error', id: 'p1', message: 'worker error' }
+        {
+          status: 'error',
+          id: 'p1',
+          message: 'worker error',
+          stdout: '',
+          stderr: expect.stringMatching(/Error: error/)
+        }
       ]
     };
 
     const keepProperties = {
-      change: ['id', 'status', 'message']
+      change: ['id', 'status', 'message', 'stdout', 'stderr']
     };
 
-    return testSchedule({ config, schedule, expect, keepProperties });
+    return testSchedule({ config, schedule, expect: expected, keepProperties });
   });
 
   test('worker missing file', () => {
