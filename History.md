@@ -1,3 +1,14 @@
+<a name="0.2.1"></a>
+## [0.2.1](https://github.com/cheminfo/process-scheduler/compare/v0.2.0...v0.2.1) (2018-09-11)
+
+
+### Bug Fixes
+
+* no side-effect if register throws ([b0f4e35](https://github.com/cheminfo/process-scheduler/commit/b0f4e35))
+* pass stdout and stderr to change event ([41dfd39](https://github.com/cheminfo/process-scheduler/commit/41dfd39))
+
+
+
 <a name="0.2.0"></a>
 # [0.2.0](https://github.com/cheminfo/process-scheduler/compare/v0.1.1...v0.2.0) (2018-08-29)
 
