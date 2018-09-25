@@ -22,6 +22,7 @@ describe('basic', () => {
         { id: 'p1', status: 'queued' },
         { id: 'p1', status: 'running' },
         { id: 'p2', status: 'queued' },
+        { id: 'p2', status: 'queued', reason: 'threads' },
         { id: 'p1', status: 'success' },
         { id: 'p2', status: 'running' },
         { id: 'p2', status: 'success' }
@@ -49,6 +50,7 @@ describe('basic', () => {
         { id: 'p1', status: 'queued' },
         { id: 'p1', status: 'running' },
         { id: 'p2', status: 'queued' },
+        { id: 'p2', status: 'queued', reason: 'threads' },
         { id: 'p1', status: 'success' },
         { id: 'p2', status: 'running' },
         { id: 'p2', status: 'success' }

@@ -58,6 +58,7 @@ describe('success', () => {
         { status: 'queued', id: 'p1' },
         { status: 'running', id: 'p1' },
         { status: 'queued', id: 'p2' },
+        { status: 'queued', id: 'p2', reason: 'threads' },
         { status: 'success', id: 'p1' },
         { status: 'running', id: 'p2' },
         { status: 'success', id: 'p2' }
@@ -72,7 +73,7 @@ describe('success', () => {
       config: {
         threads: {
           a: 1,
-          b: 1
+          b: 4
         }
       },
       schedule: [
@@ -98,6 +99,7 @@ describe('success', () => {
           { id: 'p1', status: 'queued' },
           { id: 'p1', status: 'running' },
           { id: 'p2', status: 'queued' },
+          { id: 'p2', status: 'queued', reason: 'too many threads of type a' },
           { id: 'p3', status: 'queued' },
           { id: 'p3', status: 'running' },
           { id: 'p3', status: 'success' },
@@ -131,6 +133,7 @@ describe('success', () => {
         { status: 'queued', id: 'p1' },
         { status: 'running', id: 'p1' },
         { status: 'queued', id: 'p2' },
+        { status: 'queued', id: 'p2', reason: 'concurrent process running' },
         { status: 'success', id: 'p1' },
         { status: 'running', id: 'p2' },
         { status: 'success', id: 'p2' }

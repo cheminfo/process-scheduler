@@ -22,6 +22,7 @@ export interface IChangeData {
   id: string;
   pid: string;
   status: string;
+  reason?: string;
   stderr?: string;
   stdout?: string;
   message?: string;
@@ -45,6 +46,11 @@ export interface IProcessOptions {
   arg?: any;
 }
 
+interface IStatusOptions {
+  emitChange?: boolean;
+  reason?: string;
+}
+
 export interface IThreadConfig {
   [key: string]: number;
 }
@@ -54,6 +60,7 @@ interface IQueuedProcess extends IProcessOptions {
   pid: string;
   type: string;
   status: string;
+  reason?: string; // the reason for the process to be in its status
   stderr: string;
   stdout: string;
   started: number;
@@ -236,7 +243,9 @@ export class ProcessScheduler extends (EventEmitter as {
     ) as IQueuedProcess;
     queueOptions.seqId = this._seqId++;
     queueOptions.pid = `${queueOptions.seqId}-${Date.now()}`;
-    setStatus(this, queueOptions, 'queued', true);
+    setStatus(this, queueOptions, 'queued', {
+      emitChange: true
+    });
     this._queued.set(id, queueOptions);
     debug(`${id} added to queue`);
     this._runNext();
@@ -245,36 +254,51 @@ export class ProcessScheduler extends (EventEmitter as {
   private _runNext() {
     debug('run next');
     const running = getByStatus(this._queued, 'running');
-    const runningIds = running.map((r) => r.id);
+    const runningIds = running.map(r => r.id);
+    const queued = getByStatus(this._queued, 'queued');
 
     if (running.length >= this.totalThreads) {
       debug(
         `not running next, running threads (${running.length}) reached maximum`
       );
+      for (const queuedElement of queued) {
+        setStatus(this, queuedElement, 'queued', {
+          emitChange: true,
+          reason: 'threads'
+        });
+      }
       return;
     }
 
     let nextProcess: IQueuedProcess | undefined;
     let hasConcurrent: boolean;
-    const queued = getByStatus(this._queued, 'queued');
     for (const queuedElement of queued) {
-      const runningByType = running.filter((r) => {
+      const runningByType = running.filter(r => {
         return r.type === queuedElement.type;
       });
       if (runningByType.length >= this.threads[queuedElement.type]) {
+        setStatus(this, queuedElement, 'queued', {
+          emitChange: true,
+          reason: `too many threads of type ${queuedElement.type}`
+        });
         continue;
       }
       const noConcurrency = this._concurrencyRules.get(queuedElement.id);
       if (!noConcurrency) {
         hasConcurrent = false;
       } else {
-        hasConcurrent = runningIds.some((runningId) => {
+        hasConcurrent = runningIds.some(runningId => {
           return noConcurrency.has(runningId);
         });
       }
       if (!hasConcurrent) {
         nextProcess = queuedElement;
         break;
+      } else {
+        setStatus(this, queuedElement, 'queued', {
+          emitChange: true,
+          reason: 'concurrent process running'
+        });
       }
     }
 
@@ -290,17 +314,20 @@ export class ProcessScheduler extends (EventEmitter as {
     next.stderr = '';
     next.stdout = '';
 
-    setStatus(this, next, 'running', true);
+    setStatus(this, next, 'running', {
+      emitChange: true
+    });
     next.started = Date.now();
     debug(`starting a process: ${next.id}`);
 
     const childProcess = fork(next.worker, [], { silent: true });
     next.process = childProcess;
-    childProcess.on('message', (msg) => {
+    childProcess.on('message', msg => {
       handleMessage(this, next, msg);
     });
 
-    childProcess.on('exit', (msg) => {
+    childProcess.on('exit', msg => {
+      debug(`process exited with message ${msg}`);
       let status;
       let message;
       if (msg > 0) {
@@ -316,11 +343,13 @@ export class ProcessScheduler extends (EventEmitter as {
       }
       next.message = message;
       this._queued.delete(next.id);
-      setStatus(this, next, status, true);
+      setStatus(this, next, status, {
+        emitChange: true
+      });
       this._runNext();
     });
 
-    childProcess.on('error', (msg) => {
+    childProcess.on('error', msg => {
       debug(`child process error: ${msg}`);
       // handleMessage(this, next, {
       //    status: 'error',
@@ -329,12 +358,12 @@ export class ProcessScheduler extends (EventEmitter as {
     });
 
     childProcess.stdout.setEncoding('utf8');
-    childProcess.stdout.on('data', (data) => {
+    childProcess.stdout.on('data', data => {
       next.stdout += data;
     });
 
     childProcess.stderr.setEncoding('utf8');
-    childProcess.stderr.on('data', (data) => {
+    childProcess.stderr.on('data', data => {
       next.stderr += data;
     });
 
@@ -352,7 +381,7 @@ export class ProcessScheduler extends (EventEmitter as {
 
 function getByStatus(m: Map<string, IQueuedProcess>, status: string) {
   const arr: IQueuedProcess[] = [];
-  m.forEach((val) => {
+  m.forEach(val => {
     if (val.status === status) {
       arr.push(val);
     }
@@ -365,15 +394,17 @@ function setStatus(
   scheduler: ProcessScheduler,
   obj: IQueuedProcess,
   status: string,
-  emitChange: boolean
+  options: IStatusOptions = {}
 ) {
-  if (obj.status !== status) {
+  if (obj.status !== status || obj.reason !== options.reason) {
     obj.status = status;
-    if (emitChange) {
+    obj.reason = options.reason;
+    if (options.emitChange) {
       scheduler.emit('change', {
         id: obj.id,
         pid: obj.pid,
         status: obj.status,
+        reason: obj.reason,
         message: obj.message,
         stdout: obj.stdout,
         stderr: obj.stderr

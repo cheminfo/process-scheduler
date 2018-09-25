@@ -93,6 +93,7 @@ describe('dependencies', () => {
         { status: 'queued', id: 'p1' },
         { status: 'running', id: 'p1' },
         { status: 'queued', id: 'p2' },
+        { status: 'queued', id: 'p2', reason: 'concurrent process running' },
         { status: 'success', id: 'p1' },
         { status: 'running', id: 'p2' },
         { status: 'success', id: 'p2' }
@@ -126,6 +127,7 @@ describe('dependencies', () => {
         { status: 'queued', id: 'p1' },
         { status: 'running', id: 'p1' },
         { status: 'queued', id: 'p2' },
+        { status: 'queued', id: 'p2', reason: 'concurrent process running' },
         { status: 'success', id: 'p1' },
         { status: 'running', id: 'p2' },
         { status: 'success', id: 'p2' }
@@ -155,9 +157,11 @@ describe('dependencies', () => {
           { id: 'p1', status: 'queued' },
           { id: 'p1', status: 'running' },
           { id: 'p2', status: 'queued' },
+          { id: 'p2', status: 'queued', reason: 'threads' },
           { id: 'p1', status: 'success' },
           { id: 'p2', status: 'running' },
           { id: 'p1', status: 'queued' },
+          { id: 'p1', status: 'queued', reason: 'threads' },
           { id: 'p2', status: 'success' },
           { id: 'p1', status: 'running' },
           { id: 'p1', status: 'success' }
