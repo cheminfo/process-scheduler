@@ -254,7 +254,7 @@ export class ProcessScheduler extends (EventEmitter as {
   private _runNext() {
     debug('run next');
     const running = getByStatus(this._queued, 'running');
-    const runningIds = running.map(r => r.id);
+    const runningIds = running.map((r) => r.id);
     const queued = getByStatus(this._queued, 'queued');
 
     if (running.length >= this.totalThreads) {
@@ -273,7 +273,7 @@ export class ProcessScheduler extends (EventEmitter as {
     let nextProcess: IQueuedProcess | undefined;
     let hasConcurrent: boolean;
     for (const queuedElement of queued) {
-      const runningByType = running.filter(r => {
+      const runningByType = running.filter((r) => {
         return r.type === queuedElement.type;
       });
       if (runningByType.length >= this.threads[queuedElement.type]) {
@@ -287,7 +287,7 @@ export class ProcessScheduler extends (EventEmitter as {
       if (!noConcurrency) {
         hasConcurrent = false;
       } else {
-        hasConcurrent = runningIds.some(runningId => {
+        hasConcurrent = runningIds.some((runningId) => {
           return noConcurrency.has(runningId);
         });
       }
@@ -322,11 +322,11 @@ export class ProcessScheduler extends (EventEmitter as {
 
     const childProcess = fork(next.worker, [], { silent: true });
     next.process = childProcess;
-    childProcess.on('message', msg => {
+    childProcess.on('message', (msg) => {
       handleMessage(this, next, msg);
     });
 
-    childProcess.on('exit', msg => {
+    childProcess.on('exit', (msg) => {
       debug(`process exited with message ${msg}`);
       let status;
       let message;
@@ -349,7 +349,7 @@ export class ProcessScheduler extends (EventEmitter as {
       this._runNext();
     });
 
-    childProcess.on('error', msg => {
+    childProcess.on('error', (msg) => {
       debug(`child process error: ${msg}`);
       // handleMessage(this, next, {
       //    status: 'error',
@@ -358,12 +358,12 @@ export class ProcessScheduler extends (EventEmitter as {
     });
 
     childProcess.stdout.setEncoding('utf8');
-    childProcess.stdout.on('data', data => {
+    childProcess.stdout.on('data', (data) => {
       next.stdout += data;
     });
 
     childProcess.stderr.setEncoding('utf8');
-    childProcess.stderr.on('data', data => {
+    childProcess.stderr.on('data', (data) => {
       next.stderr += data;
     });
 
@@ -381,7 +381,7 @@ export class ProcessScheduler extends (EventEmitter as {
 
 function getByStatus(m: Map<string, IQueuedProcess>, status: string) {
   const arr: IQueuedProcess[] = [];
-  m.forEach(val => {
+  m.forEach((val) => {
     if (val.status === status) {
       arr.push(val);
     }
