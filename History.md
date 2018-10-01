@@ -1,3 +1,13 @@
+<a name="0.3.0"></a>
+# [0.3.0](https://github.com/cheminfo/process-scheduler/compare/v0.2.1...v0.3.0) (2018-10-01)
+
+
+### Features
+
+* add a reason explaining a task's state ([c82da97](https://github.com/cheminfo/process-scheduler/commit/c82da97))
+
+
+
 <a name="0.2.1"></a>
 ## [0.2.1](https://github.com/cheminfo/process-scheduler/compare/v0.2.0...v0.2.1) (2018-09-11)
 
