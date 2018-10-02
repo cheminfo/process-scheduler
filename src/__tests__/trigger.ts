@@ -19,9 +19,9 @@ describe('basic', () => {
 
     const expect = {
       change: [
-        { id: 'p1', status: 'queued' },
+        { id: 'p1', status: 'queued', reason: 'from trigger' },
         { id: 'p1', status: 'running' },
-        { id: 'p2', status: 'queued' },
+        { id: 'p2', status: 'queued', reason: 'from trigger' },
         { id: 'p2', status: 'queued', reason: 'threads' },
         { id: 'p1', status: 'success' },
         { id: 'p2', status: 'running' },
@@ -47,9 +47,9 @@ describe('basic', () => {
 
     const expect = {
       change: [
-        { id: 'p1', status: 'queued' },
+        { id: 'p1', status: 'queued', reason: 'from trigger' },
         { id: 'p1', status: 'running' },
-        { id: 'p2', status: 'queued' },
+        { id: 'p2', status: 'queued', reason: 'from trigger' },
         { id: 'p2', status: 'queued', reason: 'threads' },
         { id: 'p1', status: 'success' },
         { id: 'p2', status: 'running' },
@@ -71,7 +71,7 @@ describe('basic', () => {
 
     const expect = {
       change: [
-        { id: 'p1', status: 'queued' },
+        { id: 'p1', status: 'queued', reason: 'from trigger' },
         { id: 'p1', status: 'running' },
         { id: 'p1', status: 'success' }
       ]

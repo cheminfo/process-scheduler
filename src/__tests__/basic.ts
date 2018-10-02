@@ -14,7 +14,7 @@ describe('basic', () => {
       ],
       expect: {
         change: [
-          { id: 'p1', status: 'queued' },
+          { id: 'p1', status: 'queued', reason: 'from trigger' },
           { id: 'p1', status: 'running' },
           { id: 'p1', status: 'success' }
         ],
@@ -42,7 +42,7 @@ describe('basic', () => {
 
     const expect = {
       change: [
-        { id: 'p1', status: 'queued' },
+        { id: 'p1', status: 'queued', reason: 'from trigger' },
         { id: 'p1', status: 'running' },
         { id: 'p1', status: 'success' }
       ]

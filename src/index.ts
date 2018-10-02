@@ -174,7 +174,7 @@ export class ProcessScheduler extends (EventEmitter as {
         options.id,
         nodeSchedule.scheduleJob(options.cronRule, () => {
           debug('queue from cronRule');
-          this._queueProcess(options);
+          this._queueProcess(options, 'from cronRule');
         })
       );
     }
@@ -183,7 +183,7 @@ export class ProcessScheduler extends (EventEmitter as {
       (!options.cronRule && options.immediate === undefined)
     ) {
       debug('queue from immediate');
-      this._queueProcess(options);
+      this._queueProcess(options, 'from trigger');
     }
   }
 
@@ -230,7 +230,7 @@ export class ProcessScheduler extends (EventEmitter as {
     }
   }
 
-  private _queueProcess(options: IProcessOptions) {
+  private _queueProcess(options: IProcessOptions, reason: string) {
     debug(`queue process ${options.id}`);
     // Don't queue if already queued
     const id = options.id;
@@ -246,7 +246,8 @@ export class ProcessScheduler extends (EventEmitter as {
     queueOptions.seqId = this._seqId++;
     queueOptions.pid = `${queueOptions.seqId}-${Date.now()}`;
     setStatus(this, queueOptions, 'queued', {
-      emitChange: true
+      emitChange: true,
+      reason
     });
     this._queued.set(id, queueOptions);
     debug(`${id} added to queue`);

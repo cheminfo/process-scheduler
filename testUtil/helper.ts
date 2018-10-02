@@ -29,7 +29,7 @@ function spyEvents(options) {
   options.scheduler.on('message', onEvent('message'));
 
   function onEvent(eventName) {
-    return (msg) => {
+    return msg => {
       if (!result[eventName]) {
         result[eventName] = options.groupById ? {} : [];
       }

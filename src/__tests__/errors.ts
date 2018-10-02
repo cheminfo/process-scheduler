@@ -17,7 +17,7 @@ describe('success', () => {
 
     const expect = {
       change: [
-        { status: 'queued', id: 'p1' },
+        { status: 'queued', id: 'p1', reason: 'from trigger' },
         { status: 'running', id: 'p1' },
         { status: 'error', id: 'p1' }
       ]
@@ -40,7 +40,7 @@ describe('success', () => {
 
     const expected = {
       change: [
-        { status: 'queued', id: 'p1' },
+        { status: 'queued', id: 'p1', reason: 'from trigger' },
         { status: 'running', id: 'p1' },
         {
           status: 'error',
@@ -70,7 +70,7 @@ describe('success', () => {
 
     const expect = {
       change: [
-        { status: 'queued', id: 'p1' },
+        { status: 'queued', id: 'p1', reason: 'from trigger' },
         { status: 'running', id: 'p1' },
         { status: 'error', id: 'p1', message: 'worker error' }
       ]
@@ -94,10 +94,10 @@ describe('success', () => {
       ],
       expect: {
         change: [
-          { status: 'queued', id: 'p1' },
+          { status: 'queued', id: 'p1', reason: 'from trigger' },
           { status: 'running', id: 'p1' },
           { status: 'error', id: 'p1' },
-          { status: 'queued', id: 'p1' },
+          { status: 'queued', id: 'p1', reason: 'from trigger' },
           { status: 'running', id: 'p1' },
           { status: 'success', id: 'p1' }
         ]
