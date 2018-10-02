@@ -5,7 +5,8 @@
   "rules": {
     "forin": false,
     "object-literal-sort-keys": false,
-    "variable-name": false
+    "variable-name": false,
+    "quotemark": [true, "single"]
   },
   "rulesDirectory": []
 }
