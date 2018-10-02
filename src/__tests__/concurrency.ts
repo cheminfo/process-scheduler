@@ -130,9 +130,41 @@ describe('success', () => {
 
     const expect = {
       change: [
-        { status: 'queued', id: 'p1' },
+        { status: 'queued', id: 'p1', reason: 'from trigger' },
         { status: 'running', id: 'p1' },
-        { status: 'queued', id: 'p2' },
+        { status: 'queued', id: 'p2', reason: 'from trigger' },
+        { status: 'queued', id: 'p2', reason: 'concurrent process running' },
+        { status: 'success', id: 'p1' },
+        { status: 'running', id: 'p2' },
+        { status: 'success', id: 'p2' }
+      ]
+    };
+
+    return testSchedule({ config, schedule, expect });
+  });
+
+  test('concurrent reversed order', () => {
+    const config = {
+      threads: 2
+    };
+
+    const schedule = [
+      {
+        id: 'p1',
+        worker: path.join(__dirname, '../../testUtil/workers/success.js')
+      },
+      {
+        id: 'p2',
+        worker: path.join(__dirname, '../../testUtil/workers/success.js'),
+        noConcurrency: ['p1']
+      }
+    ];
+
+    const expect = {
+      change: [
+        { status: 'queued', id: 'p1', reason: 'from trigger' },
+        { status: 'running', id: 'p1' },
+        { status: 'queued', id: 'p2', reason: 'from trigger' },
         { status: 'queued', id: 'p2', reason: 'concurrent process running' },
         { status: 'success', id: 'p1' },
         { status: 'running', id: 'p2' },

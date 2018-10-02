@@ -215,10 +215,15 @@ export class ProcessScheduler extends (EventEmitter as {
     }
 
     if (options.noConcurrency) {
+      // We specify the rules in both directions
+      // If task A cannot run while B is running, it also means B cannot run while A is running
       if (!this._concurrencyRules.get(options.id)) {
         this._concurrencyRules.set(options.id, new Set());
       }
+      const taskRules = this._concurrencyRules.get(options.id);
+      taskRules!.add(options.id);
       for (const id of options.noConcurrency) {
+        taskRules!.add(id);
         let concurrencyRules = this._concurrencyRules.get(id);
         if (!concurrencyRules) {
           concurrencyRules = new Set();
